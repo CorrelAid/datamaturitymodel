@@ -194,7 +194,7 @@ ui <- fluidPage(
     hr(),
     # Layout
     sidebarLayout(
-        sidebarPanel(width = 4,
+        sidebarPanel(id = "tPanel", style = "overflow-y:scroll; max-height: 600px; position:relative;",
             textOutput('hinweis'),
             hr(),
             
@@ -449,13 +449,28 @@ server <- function(input, output, session){
         gesellschaftlich <- mean(c(a17, a18, a19, a20))
         
         # liste kreiieren
-        liste <- list(inhaltlich=inhaltlich, systemisch=systemisch, rechtlich=rechtlich, organisatorisch=organisatorisch)
+        liste <- list(inhaltlich=inhaltlich, systemisch=systemisch, rechtlich=rechtlich, organisatorisch=organisatorisch, gesellschaftlich=gesellschaftlich)
+        
+        # Tabellenergebnisse
         
         return(liste)
     })
     
+    # Tabellarische Ergebnisse
+    dataframe <- reactive({
+        df <- matrix(c(round(final_values['systemisch'],2), round(final_values['inhaltlich'],2), 
+                       round(final_values['organisatorisch'],2), round(final_values['gesellschaftlich'],2), round(final_values['rechtlich'],2),
+                       ergebnisse()$systemisch, ergebnisse()$inhaltlich, ergebnisse()$organisatorisch, ergebnisse()$gesellschaftlich, ergebnisse()$rechtlich), 
+                     nrow=5, byrow=FALSE) # in DataFrame konvertieren (notwendige für den Grid)
+        colnames(df) <- c('Durchschnitt', 'Dein Ergebnis') # Spaltennamen anpassen
+        rownames(df) <- c('Systemisch','Inhaltlich','Organisatorisch', 'Gesellschaftlich', 'Rechtlich')
+        
+        return(df)
+    })
+    
+    
     #Plot
-    radarplot <- renderPlotly({
+    output$radarplot <- renderPlotly({
         #make plot
         plot_ly(
             type = 'scatterpolar',
@@ -465,14 +480,14 @@ server <- function(input, output, session){
             # averages
             add_trace(
                 r = c(final_values['systemisch'], final_values['inhaltlich'], final_values['organisatorisch'], final_values['gesellschaftlich'], final_values['rechtlich']),
-                theta = c('Systemisch','Inhaltlich','Organisatorisch', 'Gesellschaftlich', 'Rechtlich'),
+                theta = c('Systemisch', 'Inhaltlich','Organisatorisch', 'Gesellschaftlich', 'Rechtlich'),
                 name = 'Durchschnitt',
                 color = I("light gray")
             ) %>%
             # results
             add_trace(
                 r = c(ergebnisse()$systemisch, ergebnisse()$inhaltlich, ergebnisse()$organisatorisch, ergebnisse()$gesellschaftlich, ergebnisse()$rechtlich),
-                theta = c('Systemisch','Inhaltlich','Organisatorisch', 'Gesellschaftlich', 'Rechtlich'),
+                theta = c('Systemisch', 'Inhaltlich','Organisatorisch', 'Gesellschaftlich', 'Rechtlich'),
                 name = 'Dein Ergebnis',
                 mode   = 'markers',
                 color = I("dodgerblue")
@@ -490,29 +505,21 @@ server <- function(input, output, session){
     })
         
     # Tabelle
-    tabelle <- renderPlotly({
-        # Tabellenergebnisse
-        df <- matrix(c(round(final_values['systemisch'],2), round(final_values['inhaltlich'],2), 
-                       round(final_values['organisatorisch'],2), round(final_values['gesellschaftlich'],2), round(final_values['rechtlich'],2),
-                       ergebnisse()$systemisch, ergebnisse()$inhaltlich, ergebnisse()$organisatorisch, ergebnisse()$gesellschaftlich, ergebnisse()$rechtlich), 
-                     nrow=5, byrow=FALSE) # in DataFrame konvertieren (notwendige für den Grid)
-        colnames(df) <- c('Durchschnitt', 'Dein Ergebnis') # Spaltennamen anpassen
-        rownames(df) <- c('Systemisch','Inhaltlich','Organisatorisch', 'Gesellschaftlich', 'Rechtlich')
-        
+    output$tabelle <- renderPlotly({
         # Tabelle designen
         plot_ly(
             type = 'table',
             columnwidth = c(50, 50, 50),
             columnorder = c(0, 1, 2),
             header = list(
-                values = c('Indikator', 'Durchschnitt', 'Dein Ergebnis'),
+                values = c('Thematischer Fokus', 'Durchschnitt', 'Dein Ergebnis'),
                 align = c("center", "center", "center"),
                 line = list(width = 1, color = 'black'),
-                fill = list(color = c("white","lightgray", "dodgerblue")),
+                fill = list(color = c("black","lightgray", "dodgerblue")),
                 font = list(family = "Arial", size = 14, color = "white")
             ),
             cells = list(
-                values = rbind(rownames(df), df[,1], df[,2]),
+                values = rbind(rownames(dataframe()), dataframe()[,1], dataframe()[,2]),
                 align = c("center", "center", "center"),
                 line = list(color = "black", width = 1),
                 font = list(family = "Arial", size = 12, color = c("black"))
