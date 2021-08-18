@@ -190,12 +190,16 @@ q20_education <- Dict$new(
 ui <- fluidPage(
 
     # Titel
-    titlePanel("Datenreifegrad - Wo steht Deine Organisation?"),
-    hr(),
+    titlePanel(
+        fluidRow(
+            column(10, tags$h2("Datenreifegrad - Wo steht Deine Organisation?")), 
+            column(1, HTML('<center><img src="https://betterplace-assets.betterplace.org/uploads/organisation/profile_picture/000/033/251/crop_original_bp1613490681_Logo.jpg" width="75"></center>'))
+            )),
     # Layout
     sidebarLayout(
         sidebarPanel(id = "tPanel", style = "overflow-y:scroll; max-height: 600px; position:relative;",
-            textOutput('hinweis'),
+            tags$head(tags$style(HTML('* {font-family: "Roboto"};'))),
+            tags$text('Wähle in den nächsten 20 Fragen die Antwort aus, die deine Organisation am besten beschreibt:'),
             hr(),
             
             ## Dateninhalt
@@ -226,6 +230,7 @@ ui <- fluidPage(
             ),
             
             ## Datenverarbeitende Systeme
+            ### Speicherung
             selectInput("storage",
                         "Datenverarbeitende Systeme - Speicherung",
                         choices = q5_storage$keys,
@@ -239,8 +244,8 @@ ui <- fluidPage(
                         selected = "A) Keine oder nur rudimentäre Analysen"
             ),
             
-            ### Speicherung
-            selectInput("storage",
+            ### Zugang
+            selectInput("access",
                         "Datenverarbeitende Systeme - Zugang",
                         choices = q7_access$keys,
                         selected = "A) Nur in der Anwendung verfügbar, in der die Daten erhoben werden"
@@ -362,8 +367,31 @@ ui <- fluidPage(
             ),
         # Show a plot of the generated distribution
         mainPanel(
-            plotlyOutput('radarplot'),
-            plotlyOutput('tabelle')
+            tabsetPanel(
+                tabPanel("Ergebnisse",
+                        fluidRow(plotlyOutput('radarplot')),
+                        fluidRow(plotlyOutput('tabelle')),
+                ),
+                tabPanel ("Empfehlungen",
+                          fluidRow(tags$h5("Aussagekraft deiner Daten")),
+                          fluidRow(textOutput("empfehlung_inhaltlich")),
+                          fluidRow(tags$text("Unsere Projektmanagerin Frie Preu erreicht Ihr unter frie.p@correlaid.org.")),
+                          fluidRow(tags$h5("Reife der datenverarbeitenden Systeme")),
+                          fluidRow(textOutput("empfehlung_systemisch")),
+                          fluidRow(tags$text("Auch hier kann unsere Projektmanagerin Frie Preu (frie.p@correlaid.org) Euch weiterhelfen. Unsere vergangenen Projekte - für alle, die noch Inspiration suchen - findet Ihr unsere"), tags$a(href="https://correlaid.org/de/projects/", "Projektbeispiele"), tags$text("auch auf unserer Webseite.")),
+                          fluidRow(tags$h5("Rechtliche und dokumentarische Infrastruktur")),
+                          fluidRow(textOutput("empfehlung_rechtlich")),
+                          fluidRow(tags$text("Zur Buchung einer Datensprechstunde geht es"), tags$a(href="https://calendly.com/correlaid/30min?month=2021-08", "hier.")),
+                          fluidRow(tags$h5("Organisatorischer Reifegrad")),
+                          fluidRow(textOutput("empfehlung_organisatorisch")),
+                          fluidRow(tags$text("Unsere Koordinatorin für datenwissenschaftliche Bildung Nina Hauser erreicht Ihr unter nina.h@correlaid.org. Geplante Events findet Ihr auf unserer"), tags$a(href="https://correlaid.org/de/events/", "Webseite.")),
+                          fluidRow(tags$h5("Gesellschaftliche Einbettung")),
+                          fluidRow(textOutput("empfehlung_gesellschaftlich")),
+                          fluidRow(hr()),
+                          fluidRow(tags$text("Ihr wollt keine News von CorrelAid e.V. mehr verpassen? Zur Newsletteranmeldung:")),
+                          fluidRow(tags$a(href="https://correlaid.us12.list-manage.com/subscribe?u=b294bf2834adf5d89bdd2dd5a&id=175fade988", "Klick hier!")),
+                          )
+            )
         )
     )
 )
@@ -371,21 +399,16 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output, session){
     
-    # Hinweis
+    # Organisation und Datum
     output$orga <- renderText({
         paste('Ergebnisse von ', input$name, ' am ', format(Sys.time(), " %d.%m.%Y"), '.', sep ='')
-    })
-    
-    # Datum und Organisation
-    output$hinweis <- renderText({
-        paste('Wählt in den folgenden 20 Fragen die Antwortoption aus, die am meisten auf Euch zutrifft')
     })
     
     # Ergebnisse abschicken
     observeEvent(input$ergebnisse, {
         
         # Daten in DF abspeichern
-        ergebnisse <- as.data.frame(rbind(c(input$name, input$type,
+        ergebnisse <- as.data.frame(rbind(c(format(Sys.time(), " %d.%m.%Y"), input$name, input$type,
                                             q1_relevant$get(input$relevant),
                                             q2_granularity$get(input$granularity),
                                             q3_collection$get(input$collection),
@@ -413,7 +436,7 @@ server <- function(input, output, session){
     # Bedienungshilfe
     hilfe_text <- "Bei Anmerkungen oder Fragen wendet Euch an: nina.h@correlaid.org"
     observeEvent(input$hilfe, {
-        showModal(modalDialog(hilfe_text, title = "Bedienungshilfe", footer = mYesodalButton("Schließen")))
+        showModal(modalDialog(hilfe_text, title = "Bedienungshilfe", footer = modalButton("Schließen")))
     })
     
     # Ergebnisse
@@ -449,7 +472,11 @@ server <- function(input, output, session){
         gesellschaftlich <- mean(c(a17, a18, a19, a20))
         
         # liste kreiieren
-        liste <- list(inhaltlich=inhaltlich, systemisch=systemisch, rechtlich=rechtlich, organisatorisch=organisatorisch, gesellschaftlich=gesellschaftlich)
+        liste <- list(relevant = a1, granularity = a2, collection = a3, quality = a4, inhaltlich = inhaltlich, 
+                      storage = a5, analysis = a6, access = a7, integration = a8, dsgvo = a9, doku = a10, systemisch = systemisch, 
+                      dsgvo = a9, doku = a10, user = a11, history = a12, rechtlich = rechtlich, 
+                      orga = a13, mgmt = a14, pm = a15, quant = a16, organisatorisch=organisatorisch, 
+                      funding = a17, partner = a18, extern = a19, education = a20, gesellschaftlich=gesellschaftlich)
         
         # Tabellenergebnisse
         
@@ -525,6 +552,47 @@ server <- function(input, output, session){
                 font = list(family = "Arial", size = 12, color = c("black"))
             ))
     })
+    
+    # inhaltlich -> projekt
+    output$empfehlung_inhaltlich <- renderText({
+        if (ergebnisse()$inhaltlich < 2) {
+            print("Mit Euren Daten könnt Ihr auf Grund fehlender Indikatoren, Granularität oder Qualität durch zu geringe Erhebungsfrequenz oder Fehleingaben keine gültigen Aussagen treffen? In einem datenstrategischen Projekt analysieren wir Euren Datenbestand hinsichtlich dieser Kriterien und geben Euch Empfehlungen, wie Ihr in Zukunft besser Daten generieren könnt. Dazu gehört auch die Ausarbeitung von Erhebungstools wie Umfragen und automatisierten Datenschnittstellen zu digitalen Datensätzen.")
+        }
+        else print("Inhaltlich könnt Ihr mit Euren Daten bereits gut arbeiten. Ihr vermutet, es gibt an einigen Stellen trotzdem noch Verbesserungspotenzial? Lasst Euch von unserer Projektmanager:innen beraten.")
+        })
+    
+    # systemisch -> projekt
+    output$empfehlung_systemisch <- renderText({
+        if (ergebnisse()$systemisch < 2) {
+            print("Um mit Daten arbeiten zu können, benötigt es Systeme zur Speicherung und Analyse. Idealerweise sind diese miteinander verknüpft und erlauben den Zugriff auf Daten system- und organisationsweit. Bei dem Aufbau Eurer Systemlandschaft können Euch ehrenamtliche Datenanalyst:innen von CorrelAid e.V. unterstützen.")
+        }
+        else print("Ihr besitzt bereits ausgeklügelte datenverarbeitende Systeme. Trotzdem möchtet Ihr diese noch verbessern oder benötigt ein weiteres Analystetool? Wir beraten Euch gerne.")
+    })
+    
+    # rechtlich -> datensprechstunde
+    output$empfehlung_rechtlich <- renderText({
+        if (ergebnisse()$rechtlich < 2) {
+            print("Bei der Verarbeitung von Daten entstehen Verpflichtungen rund um Datenschutz (u.a. DSGVO) und Dokumentation. Nicht zuletzt müsst Ihr insbesondere personenbezogene Daten systemisch und organisatorisch angemessen schützen und ihre Verarbeitung dokumentieren. In unserer Datensprechstunde vermitteln wir punktuell Wissen rund um das Thema.")
+        }
+        else print("Bei Euren datenverarbeitenden Prozesse macht Ihr Euch bereits umfangreich Gedanken um die rechtlichen Rahmenbedingungen. Für verbliebene Fragen könnt Ihr uns natürlich gerne in der Datensprechstunde kontaktieren.")
+    })
+    
+    # organisatorisch -> workshop
+    output$empfehlung_organisatorisch <- renderText({
+        if (ergebnisse()$organisatorisch < 2) {
+            print("Den Aufbau Eurer Datenstrategie können wir ebenfalls durch ein Projekt betreuuen. Um Eure Orgsanisation fit für die Zukunft zu machen, bieten wir auch verschiedene Bildungsformate an: Von datenstragtegischen Formaten, mit denen auch non-data natives Projektideen mitkonzeptionieren können, bis hin zu Programmierworkshops für Anfänger:innen.")
+        }
+        else print("Eure Organisation verfügt bereits über eine Datenstrategie und ausreichende Kompetenzen im Team. Wenn Ihr punktuell trotzdem Eure Fähigkeiten ausbauen wollt, sind unsere Workshopformate für Euch die richtige Wahl.")
+    })
+    
+    # gesellschaftlich -> correlcon
+    output$empfehlung_gesellschaftlich <- renderText({
+        if (ergebnisse()$gesellschaftlich < 2) {
+            print("In unserem Netzwerk finden nicht nur gleichgesinnte Datenanalyst:innen einander, auch gemeinnützige Organisationen und solche, die diese fördern wollen, tauschen sich aus. Besonders auf der CorrelCon, die jedes Jahr im November stattfindet, könnt Ihr Euch vernetzen. Gerne unterstützen wir Euch auch in einer längeren Partnerschaft bei dem Aufbau Eurer Datenlandschaft - durch die Vermittlung von Wissen und durch die praktische Umsetzung Eurer Ideen.")
+        }
+        else print("Wo Ihr steht, ist für uns die Zukunftsvision für den gesamten dritten Sektor: Fördernde und Partner:innen Eurer Organisation arbeiten genauso evidenzbasiert wie Ihr. Unterstützung erhaltet Ihr zudem durch die Bildungs- und Umsetzungsangebote zu Datenthemen externer Dienstleister:innen wie CorrelAid e.V.")
+    })
+    
 }
 
 # Run the application 
