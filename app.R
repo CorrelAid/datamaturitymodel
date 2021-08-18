@@ -11,7 +11,7 @@ library(gridExtra)
 # Set up and read google sheet
 
 ## get your token to access google drive
-shiny_token <- gs4_auth('correlaid2@gmail.com')
+shiny_token <- gs4_auth('correlaid.data4good@gmail.com')
 saveRDS(shiny_token, "shiny_app_token.rds")
 
 ## read data
@@ -188,7 +188,30 @@ q20_education <- Dict$new(
 
 # User Interface
 ui <- fluidPage(
-
+    tags$head(tags$style(
+        HTML('
+         .well {
+            background-color: #96C341;
+        }
+             
+        .selectize-input.full {
+            background-color: #72A36F;
+        }
+        .selectize-dropdown {
+            background-color: #72A36F;
+        }
+        #name {
+            background-color: #72A36F;
+        }
+        
+        #ergebnisse {
+            background-color: #72A36F;
+        }
+        
+        #hilfe {
+            background-color: #72A36F;
+        }'))),
+    
     # Titel
     titlePanel(
         fluidRow(
@@ -198,10 +221,6 @@ ui <- fluidPage(
     # Layout
     sidebarLayout(
         sidebarPanel(id = "tPanel", style = "overflow-y:scroll; max-height: 600px; position:relative;",
-            # Idea: color sidebar panel (non-functional)
-            tags$head(tags$style(".navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a > .ion {
-                                    color: #000;
-                                    }")),
             tags$text('Wähle in den nächsten 20 Fragen die Antwort aus, die deine Organisation am besten beschreibt:'),
             hr(),
             
