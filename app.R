@@ -198,33 +198,36 @@ ui <- fluidPage(
     # Layout
     sidebarLayout(
         sidebarPanel(id = "tPanel", style = "overflow-y:scroll; max-height: 600px; position:relative;",
-            tags$head(tags$style(HTML('* {font-family: "Roboto"};'))),
+            # Idea: color sidebar panel (non-functional)
+            tags$head(tags$style(".navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a > .ion {
+                                    color: #000;
+                                    }")),
             tags$text('Wähle in den nächsten 20 Fragen die Antwort aus, die deine Organisation am besten beschreibt:'),
             hr(),
             
             ## Dateninhalt
             ### Relevanz
             selectInput("relevant",
-                        "Dateninhalt - Relevanz und Vollständigkeit",
+                        "Aussagekraft der Daten - Relevanz und Vollständigkeit",
                         choices = q1_relevant$keys,
                         selected = "A) Zwischen tatsächlicher Datenlage und Datenbedarf liegt eine hohe Diskrepanz vor"
                         ),
             ### Granularität
             selectInput("granularity",
-                        "Dateninhalt - Granularität",
+                        "Aussagekraft der Daten - Granularität",
                         choices = q2_granularity$keys,
                         selected = "A) Gesamtheitlich aggregiert (z.B. absolute Teilnehmerzahl)"
             ),
             ### Erhebung
             selectInput("collection",
-                        "Dateninhalt - Erhebungsfrequenz",
+                        "Aussagekraft der Daten - Erhebungsfrequenz",
                         choices = q3_collection$keys,
                         selected = "A) Einmalig"
             ),
             
             ### Qualität
             selectInput("quality",
-                        "Dateninhalt - Qualität",
+                        "Aussagekraft der Daten - Qualität",
                         choices = q4_quality$keys,
                         selected = "A) Es fehlen Datenpunkte (Individuen oder Einheiten)"
             ),
@@ -288,28 +291,28 @@ ui <- fluidPage(
             
             ### Organisation
             selectInput("orga",
-                        "Organisation - insgesamt",
+                        "Organisatorische Reifegrad - insgesamt",
                         choices = q13_orga$keys,
                         selected = "A) Arbeitnehmer:innen wissen, dass Daten existieren, aber noch nicht, was diese enthalten und wozu diese genutzt werden können"
             ),
             
             ### Management
             selectInput("mgmt",
-                        "Organisation - Management",
+                        "Organisatorische Reifegrad - Management",
                         choices = q14_mgmt$keys,
                         selected = "A) Dem Management ist der Nutzen von Daten noch unklar"
             ),
             
             ### Programmatisches Personal
             selectInput("pm",
-                        "Organisation - Programmatisches Personal",
+                        "Organisatorische Reifegrad - Programmatisches Personal",
                         choices = q15_pm$keys,
                         selected = "A) Arbeitnehmer:innen, die für die Erhebung von Daten zuständig sind, sehen diese als notwendige Verpflichtung, der sie nur unregelmäßig nachkommen"
             ),
             
             ### Analytisches/technisches Personal
             selectInput("quant",
-                        "Organisation - Analytisches/technisches Personal",
+                        "Organisatorische Reifegrad - Analytisches/technisches Personal",
                         choices = q16_quant$keys,
                         selected = "A) Der Organisation steht kein Personal zur Verfügung, das mit erhobenen Daten arbeiten kann"
             ),
@@ -376,10 +379,10 @@ ui <- fluidPage(
                           fluidRow(tags$h5("Aussagekraft deiner Daten")),
                           fluidRow(textOutput("empfehlung_inhaltlich")),
                           fluidRow(tags$text("Unsere Projektmanagerin Frie Preu erreicht Ihr unter frie.p@correlaid.org.")),
-                          fluidRow(tags$h5("Reife der datenverarbeitenden Systeme")),
+                          fluidRow(tags$h5("Datenverarbeitende Systeme")),
                           fluidRow(textOutput("empfehlung_systemisch")),
                           fluidRow(tags$text("Auch hier kann unsere Projektmanagerin Frie Preu (frie.p@correlaid.org) Euch weiterhelfen. Unsere vergangenen Projekte - für alle, die noch Inspiration suchen - findet Ihr unsere"), tags$a(href="https://correlaid.org/de/projects/", "Projektbeispiele"), tags$text("auch auf unserer Webseite.")),
-                          fluidRow(tags$h5("Rechtliche und dokumentarische Infrastruktur")),
+                          fluidRow(tags$h5("Rechtliche Infrastruktur")),
                           fluidRow(textOutput("empfehlung_rechtlich")),
                           fluidRow(tags$text("Zur Buchung einer Datensprechstunde geht es"), tags$a(href="https://calendly.com/correlaid/30min?month=2021-08", "hier.")),
                           fluidRow(tags$h5("Organisatorischer Reifegrad")),
@@ -485,12 +488,12 @@ server <- function(input, output, session){
     
     # Tabellarische Ergebnisse
     dataframe <- reactive({
-        df <- matrix(c(round(final_values['systemisch'],2), round(final_values['inhaltlich'],2), 
-                       round(final_values['organisatorisch'],2), round(final_values['gesellschaftlich'],2), round(final_values['rechtlich'],2),
-                       ergebnisse()$systemisch, ergebnisse()$inhaltlich, ergebnisse()$organisatorisch, ergebnisse()$gesellschaftlich, ergebnisse()$rechtlich), 
+        df <- matrix(c(round(final_values['inhaltlich'],2), round(final_values['systemisch'],2), round(final_values['rechtlich'],2),
+                       round(final_values['organisatorisch'],2), round(final_values['gesellschaftlich'],2),
+                       ergebnisse()$inhaltlich, ergebnisse()$systemisch, ergebnisse()$rechtlich, ergebnisse()$organisatorisch, ergebnisse()$gesellschaftlich), 
                      nrow=5, byrow=FALSE) # in DataFrame konvertieren (notwendige für den Grid)
         colnames(df) <- c('Durchschnitt', 'Dein Ergebnis') # Spaltennamen anpassen
-        rownames(df) <- c('Systemisch','Inhaltlich','Organisatorisch', 'Gesellschaftlich', 'Rechtlich')
+        rownames(df) <- c('Inhaltlich', 'Systemisch', 'Rechtlich', 'Organisatorisch', 'Gesellschaftlich')
         
         return(df)
     })
@@ -517,7 +520,7 @@ server <- function(input, output, session){
                 theta = c('Systemisch', 'Inhaltlich','Organisatorisch', 'Gesellschaftlich', 'Rechtlich'),
                 name = 'Dein Ergebnis',
                 mode   = 'markers',
-                color = I("dodgerblue")
+                color = I("#357699")
             ) %>%
             # layout
             layout(
@@ -542,7 +545,7 @@ server <- function(input, output, session){
                 values = c('Thematischer Fokus', 'Durchschnitt', 'Dein Ergebnis'),
                 align = c("center", "center", "center"),
                 line = list(width = 1, color = 'black'),
-                fill = list(color = c("black","lightgray", "dodgerblue")),
+                fill = list(color = c("black","lightgray", "#357699")),
                 font = list(family = "Arial", size = 14, color = "white")
             ),
             cells = list(
@@ -556,7 +559,7 @@ server <- function(input, output, session){
     # inhaltlich -> projekt
     output$empfehlung_inhaltlich <- renderText({
         if (ergebnisse()$inhaltlich < 2) {
-            print("Mit Euren Daten könnt Ihr auf Grund fehlender Indikatoren, Granularität oder Qualität durch zu geringe Erhebungsfrequenz oder Fehleingaben keine gültigen Aussagen treffen? In einem datenstrategischen Projekt analysieren wir Euren Datenbestand hinsichtlich dieser Kriterien und geben Euch Empfehlungen, wie Ihr in Zukunft besser Daten generieren könnt. Dazu gehört auch die Ausarbeitung von Erhebungstools wie Umfragen und automatisierten Datenschnittstellen zu digitalen Datensätzen.")
+            print("Mit Euren Daten könnt Ihr auf Grund fehlender Indikatoren, Granularität oder Qualität durch zu geringe Erhebungsfrequenz oder Fehleingaben keine gültigen Aussagen treffen? In einem datenstrategischen Projekt analysieren wir Euren Datenbestand hinsichtlich dieser Kriterien und geben Euch Empfehlungen, wie Ihr in Zukunft besser Daten generieren könnt. Dazu gehört auch die Ausarbeitung von Erhebungstools wie Umfragen und automatisierten Datenschnittstellen (APIs) zu internen und externen Datensätzen.")
         }
         else print("Inhaltlich könnt Ihr mit Euren Daten bereits gut arbeiten. Ihr vermutet, es gibt an einigen Stellen trotzdem noch Verbesserungspotenzial? Lasst Euch von unserer Projektmanager:innen beraten.")
         })
