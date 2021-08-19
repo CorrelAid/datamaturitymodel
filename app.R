@@ -563,7 +563,7 @@ server <- function(input, output, session){
                 values = c('Thematischer Fokus', 'Durchschnitt', 'Dein Ergebnis'),
                 align = c("center", "center", "center"),
                 line = list(width = 1, color = 'black'),
-                fill = list(color = c("black","lightgray", "#357699")),
+                fill = list(color = c("black","lightgray", "#8FAFC1")),
                 font = list(family = "Arial", size = 14, color = "white")
             ),
             cells = list(
