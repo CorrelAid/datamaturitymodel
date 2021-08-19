@@ -11,7 +11,7 @@ library(gridExtra)
 # Set up and read google sheet
 
 ## get your token to access google drive
-shiny_token <- gs4_auth('correlaid.data4good@gmail.com')
+shiny_token <- gs4_auth('correlaid2@gmail.com')
 saveRDS(shiny_token, "shiny_app_token.rds")
 
 ## read data
@@ -191,25 +191,25 @@ ui <- fluidPage(
     tags$head(tags$style(
         HTML('
          .well {
-            background-color: #96C341;
+            background-color: #8FAFC1;
         }
              
         .selectize-input.full {
-            background-color: #72A36F;
+            background-color: #FFFFFF;
         }
         .selectize-dropdown {
-            background-color: #72A36F;
+            background-color: #FFFFFF;
         }
         #name {
-            background-color: #72A36F;
+            background-color: #FFFFFF;
         }
         
         #ergebnisse {
-            background-color: #72A36F;
+            background-color: #FFFFFF;
         }
         
         #hilfe {
-            background-color: #72A36F;
+            background-color: #FFFFFF;
         }'))),
     
     # Titel
@@ -380,8 +380,7 @@ ui <- fluidPage(
             
             # Einfügen eines Hilfefensters
             actionButton("hilfe", "Hilfe"),
-        
-            hr(),
+            
             hr(),
         
             # Textoutput Organisation
