@@ -70,10 +70,10 @@ q4_quality <- Dict$new(
 ## Datenverarbeitende Systeme (Systemisch)
 ### Speicherformat
 q5_storage <- Dict$new(
-    "A) Papier" = 1,
-    "B) PDFs/Bilder" = 2,
-    "C) Textdateien (CSV, XML, …)" = 3,
-    "D) Datenbanken" = 4)
+    "A) Papier oder PDFs/Bilder" = 1,
+    "B) Unformatierte Textdateien (XLS, CSV, XML, …) ohne Qualitätskontrolle" = 2,
+    "C) Formatierte Textdateien (XLS, CSV, XML, …) mit Qualitätskontrolle" = 3,
+    "D) Datenbanken (intern " = 4)
 
 ### Analyse
 q6_analysis <- Dict$new(
@@ -256,7 +256,7 @@ ui <- fluidPage(
             selectInput("storage",
                         "Datenverarbeitende Systeme - Speicherung",
                         choices = q5_storage$keys,
-                        selected = "A) Papier"
+                        selected = "A) Papier oder PDFs/Bilder"
             ),
             
             ### Analyse
