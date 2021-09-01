@@ -5,14 +5,20 @@ library(shiny)
 library(dplyr)
 library(plotly)
 library (googlesheets4)
+library(googledrive)
+library(gargle)
 library(Dict)
 library(gridExtra)
+library(shinydisconnect)
 
 # Set up and read google sheet
 
 ## get your token to access google drive
 shiny_token <- gs4_auth('correlaid2@gmail.com')
 saveRDS(shiny_token, "shiny_app_token.rds")
+
+# googledrive
+# drive_auth(token = readr::read_rds("shiny_app_token.rds"))
 
 ## read data
 base_df <- as.data.frame(read_sheet(ss = '10YlWyJzaDFer6rqKFTAYkXLuhcC9JgynSRmSUa5AnUk', sheet = "Daten"))
@@ -211,6 +217,9 @@ ui <- fluidPage(
         #hilfe {
             background-color: #FFFFFF;
         }'))),
+    
+    # Bei Fehlern
+    disconnectMessage("Hups, da ist wohl etwas schiefgelaufen. Bitte probiere es später erneut!"),
     
     # Titel
     titlePanel(
@@ -420,6 +429,11 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output, session){
     
+    # Bei Fehlern
+    observeEvent(input$disconnect, {
+        session$close()
+    })
+    
     # Organisation und Datum
     output$orga <- renderText({
         paste('Ergebnisse von ', input$name, ' am ', format(Sys.time(), " %d.%m.%Y"), '.', sep ='')
@@ -618,3 +632,7 @@ server <- function(input, output, session){
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
+# Deploment
+# rsconnect::setAccountInfo(name='correlaid', token='7CA3025778F64A6D60B5410CF71D6FC4', secret='DGut10PvWS73Ur5+cga4Q9r0J0XghgFAmi7lxCqC')
+# rsconnect::deployApp()
