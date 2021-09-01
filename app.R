@@ -14,11 +14,25 @@ library(shinydisconnect)
 # Set up and read google sheet
 
 ## get your token to access google drive
-shiny_token <- gs4_auth('correlaid2@gmail.com')
-saveRDS(shiny_token, "shiny_app_token.rds")
+# shiny_token <- gs4_auth('correlaid.data4good@gmail.com')
+# saveRDS(shiny_token, "shiny_app_token.rds")
 
-# googledrive
-# drive_auth(token = readr::read_rds("shiny_app_token.rds"))
+# # designate project-specific cache
+# options(gargle_oauth_cache = ".secrets")
+# 
+# # check the value of the option, if you like
+# gargle::gargle_oauth_cache()
+# 
+# # trigger auth on purpose --> store a token in the specified cache
+# googlesheets4::gs4_auth( )
+# 
+# # see your token file in the cache, if you like
+# list.files(".secrets/")
+
+
+token_path <- list.files('.secrets', full.names = TRUE)
+token <- readr::read_rds(token_path[1])
+gs4_auth(token = token)
 
 ## read data
 base_df <- as.data.frame(read_sheet(ss = '10YlWyJzaDFer6rqKFTAYkXLuhcC9JgynSRmSUa5AnUk', sheet = "Daten"))
