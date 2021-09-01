@@ -628,6 +628,5 @@ server <- function(input, output, session){
 # Run the application 
 shinyApp(ui = ui, server = server)
 
-# Deploment
-# rsconnect::setAccountInfo(name='correlaid', token='7CA3025778F64A6D60B5410CF71D6FC4', secret='DGut10PvWS73Ur5+cga4Q9r0J0XghgFAmi7lxCqC')
+# Deployment
 # rsconnect::deployApp()
