@@ -5,7 +5,7 @@ account: correlaid
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4570673
-bundleId: 4988108
+bundleId: 4988648
 url: https://correlaid.shinyapps.io/datamaturitymodel/
-when: 1630487099.08325
-lastSyncTime: 1630487099.08326
+when: 1630498223.04917
+lastSyncTime: 1630498223.04918

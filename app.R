@@ -1,6 +1,3 @@
-
-# Ideas: Add distribution plots with solid line for result and table with averages and result
-
 library(shiny)
 library(dplyr)
 library(plotly)
@@ -14,11 +11,11 @@ library(shinydisconnect)
 # Set up and read google sheet
 
 ## get your token to access google drive
-shiny_token <- gs4_auth('correlaid2@gmail.com')
-saveRDS(shiny_token, "shiny_app_token.rds")
+#shiny_token <- gs4_auth('correlaid2@gmail.com')
+#saveRDS(shiny_token, "shiny_app_token.rds")
 
 # googledrive
-# drive_auth(token = readr::read_rds("shiny_app_token.rds"))
+drive_auth(email = "correlaid2@gmail.com", token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjgxOWQxZTYxNDI5ZGQzZDNjYWVmMTI5YzBhYzJiYWU4YzZkNDZmYmMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNjAzMzY2NTg1MTMyLThpYWcwZmo0OWNpbTgyOGpvY2w4NzJqcGlmMDhkaDVpLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNjAzMzY2NTg1MTMyLThpYWcwZmo0OWNpbTgyOGpvY2w4NzJqcGlmMDhkaDVpLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTE1MTIzNjE2MzQ3OTY3NTMwMTgxIiwiZW1haWwiOiJjb3JyZWxhaWQyQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiUDk2a1FXSV9DXzVCd2ZtTTlDRGhhQSIsImlhdCI6MTYzMDQ4MzkzOCwiZXhwIjoxNjMwNDg3NTM4fQ.AxHwflQwiTIegbQsa7sKJXDKCpIvCLXn-MVFW-G76a-w0eo79qwxTSqVEuqwMQf31Yfe9Cb4ipGPkuVVJmHcMClmd-CWHHRbU5dBGkO0y0TR2_GEpuRUaQJwJvuv28P_XKjbgjmCrVF4FFiBcidSpIvUag7XCVmJk-bAw8TJ36tXT9TjUg-xDqWN4v9LD8A87ufJt-32Nc-2-OIUnvk90NYXoLkAAQFYmEM2jblKXBZIS-8KMgXrVXinOx2Vn-I6akiLTeuSkt8lP0kezJTvt8mxErC7qXL_Q9rnMnqVeWTM4doi9mhnvfFPM0__cJ96Cd9ebWIxVeKnEEvK472RAQ")
 
 ## read data
 base_df <- as.data.frame(read_sheet(ss = '10YlWyJzaDFer6rqKFTAYkXLuhcC9JgynSRmSUa5AnUk', sheet = "Daten"))
