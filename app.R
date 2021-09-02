@@ -176,7 +176,7 @@ q19_extern <- Dict$new(
     "A) Es gibt keinerlei externe Unterstützung" = 1,
     "B) Externe bieten punktuell pro-bono technische/analytische Unterstützung" = 2,
     "C) Externe bieten langfristig pro-bono technische/analytische Unterstützung" = 3,
-    "D) Externe haben einen langfristigen vergü-teten Betreuungsauftrag (alt.: alles ist Inhouse)" = 4)
+    "D) Externe haben einen langfristigen vergüteten Betreuungsauftrag (alt.: alles ist Inhouse)" = 4)
 
 ### Speicherformat
 q20_education <- Dict$new(
@@ -264,7 +264,7 @@ ui <- fluidPage(
             ),
             
             ### Analyse
-            selectInput("analyse",
+            selectInput("analysis",
                         "Datenverarbeitende Systeme - Analyse",
                         choices = q6_analysis$keys,
                         selected = "A) Keine oder nur rudimentäre Analysen"
@@ -355,7 +355,7 @@ ui <- fluidPage(
             ),
             
             ### Dienstleistende
-            selectInput("external",
+            selectInput("extern",
                         "Gesellschaftliche Einbettung - Dienstleistende",
                         choices = q19_extern$keys,
                         selected = "A) Es gibt keinerlei externe Unterstützung"
@@ -558,7 +558,8 @@ server <- function(input, output, session){
                         angle = 0 #begin of axis
                     )
                 )
-            )
+            ) %>%
+            config(staticPlot = TRUE)
     })
         
     # Tabelle
@@ -580,7 +581,8 @@ server <- function(input, output, session){
                 align = c("center", "center", "center"),
                 line = list(color = "black", width = 1),
                 font = list(family = "Arial", size = 12, color = c("black"))
-            ))
+            )) %>%
+            config(staticPlot = TRUE)
     })
     
     # inhaltlich -> projekt
