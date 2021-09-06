@@ -189,7 +189,10 @@ q20_education <- Dict$new(
 
 # User Interface
 ui <- fluidPage(
-    tags$head(tags$style(
+    title="CorrelAid e.V. | Datenreifegradmodell",
+    tags$head(
+        tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "https://correlaid.org/favicons/favicon-32x32.png"),
+        tags$style(
         HTML('
          .well {
             background-color: #8FAFC1;
@@ -219,13 +222,13 @@ ui <- fluidPage(
     # Titel
     titlePanel(
         fluidRow(
-            column(10, tags$h2("Datenreifegrad - Wo steht Deine Organisation?")), 
+            column(10, tags$h2("Datenreifegrad - Wo steht Eure Organisation?")), 
             column(1, HTML('<center><img src="https://betterplace-assets.betterplace.org/uploads/organisation/profile_picture/000/033/251/crop_original_bp1613490681_Logo.jpg" width="75"></center>'))
             )),
     # Layout
     sidebarLayout(
         sidebarPanel(id = "tPanel", style = "overflow-y:scroll; max-height: 600px; position:relative;",
-            tags$text('Wähle in den nächsten 20 Fragen die Antwort aus, die deine Organisation am besten beschreibt:'),
+            tags$text('Wählt in den nächsten 20 Fragen die Antwort aus, die Eure Organisation am besten beschreibt:'),
             hr(),
             
             ## Dateninhalt
@@ -370,10 +373,10 @@ ui <- fluidPage(
             
             hr(),
             # Textinput Organisation
-            textInput('name', 'Gib hier den Namen deiner Organisation an:', value = 'unbekannte Organisation'), 
+            textInput('name', 'Gebt hier den Namen Eurer Organisation an:', value = 'unbekannte Organisation'), 
         
             # Arbeitsbreich auswählen
-            selectInput('type', 'In welchem Bereich ist deine Organisation aktiv?', selected = 'Sonstige', 
+            selectInput('type', 'In welchem Bereich ist Eure Organisation aktiv?', selected = 'Sonstige', 
                         choices = c('Beschäftigung', 'Bildung und Forschung', 'Gesundheit', ' Katastrophenhilfe',
                                     'Kommunale Entwicklung und Wohnen', 'Kunst, Kultur und Sport', 'Migration',
                                     'Philantrophische Intermediaries und Förderung des Ehrenamts', 'Recht, Advocacy und Politik',
@@ -398,7 +401,7 @@ ui <- fluidPage(
                         fluidRow(plotlyOutput('tabelle')),
                 ),
                 tabPanel ("Empfehlungen",
-                          fluidRow(tags$h5("Aussagekraft deiner Daten")),
+                          fluidRow(tags$h5("Aussagekraft Eurer Daten")),
                           fluidRow(textOutput("empfehlung_inhaltlich")),
                           fluidRow(tags$text("Unsere Projektmanagerin Frie Preu erreicht Ihr unter frie.p@correlaid.org.")),
                           fluidRow(tags$h5("Datenverarbeitende Systeme")),
@@ -464,7 +467,10 @@ server <- function(input, output, session){
     })
     
     # Bedienungshilfe
-    hilfe_text <- "Bei Anmerkungen oder Fragen wendet Euch an: nina.h@correlaid.org"
+    hilfe_text <- "Mit dem Datenreifegradmodell könnt Ihr bestimmen, wo Eure Organisation derzeit beim Thema Daten aufgestellt ist, und Euch inspirieren lassen, was noch möglich ist. 
+    Zudem erhaltet Ihr Empfehlungen, wie CorrelAid e.V. Eure Organisation unterstützen kann. Die Antwort A entspricht dabei der Bewertung 1 (=noch nicht ausreichend), Antwort B 2 (=ausreichend), Antwort C 3 (=fortgeschritten) und Antwort D 4 (=ausgezeichnet). 
+    Im Netzdiagramm seht Ihr zudem, wie Ihr im Vergleich zu anderen Organisationen abschneidet, die das Modell bereits bei uns ausgefüllt haben.
+    Bei Anmerkungen oder Fragen zum Modell wendet Euch gerne an: nina.h@correlaid.org"
     observeEvent(input$hilfe, {
         showModal(modalDialog(hilfe_text, title = "Bedienungshilfe", footer = modalButton("Schließen")))
     })
