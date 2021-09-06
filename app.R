@@ -193,7 +193,20 @@ ui <- fluidPage(
     tags$head(
         tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "https://correlaid.org/favicons/favicon-32x32.png"),
         tags$style(
-        HTML('
+        HTML("
+            <script>
+          var socket_timeout_interval
+          var n = 0
+          $(document).on('shiny:connected', function(event) {
+          socket_timeout_interval = setInterval(function(){
+          Shiny.onInputChange('count', n++)
+          }, 15000)
+          });
+          $(document).on('shiny:disconnected', function(event) {
+          clearInterval(socket_timeout_interval)
+          });
+          </script>
+          
          .well {
             background-color: #8FAFC1;
         }
@@ -214,10 +227,13 @@ ui <- fluidPage(
         
         #hilfe {
             background-color: #FFFFFF;
-        }'))),
+        }"))),
+    
+    # TimeOut stoppen
+    textOutput("keepAlive"),
     
     # Bei Fehlern
-    disconnectMessage("Hups, da ist wohl etwas schiefgelaufen. Bitte probiere es später erneut!"),
+    disconnectMessage("Hups, da ist wohl etwas schiefgelaufen. Vielleicht wart Ihr zu lange inaktiv? Unser Rechner Elmo kann Eure Daten bei Inaktivität leider nur für 15min speichern. Bitte probiert es erneut!"),
     
     # Titel
     titlePanel(
@@ -229,6 +245,7 @@ ui <- fluidPage(
     sidebarLayout(
         sidebarPanel(id = "tPanel", style = "overflow-y:scroll; max-height: 600px; position:relative;",
             tags$text('Wählt in den nächsten 20 Fragen die Antwort aus, die Eure Organisation am besten beschreibt:'),
+            
             hr(),
             
             ## Dateninhalt
@@ -383,10 +400,13 @@ ui <- fluidPage(
                                     'Religion', 'Soziale Dienstleistungen', 'Umwelt', 'Sonstige')),
             
             # Einfügen eines Submit-Buttons
-            actionButton("ergebnisse", "Ergebnisse absenden"),
+            actionButton("ergebnisse", "Absenden!"),
             
             # Einfügen eines Hilfefensters
             actionButton("hilfe", "Hilfe"),
+            
+            # Einfügen eines Hilfefensters
+            actionButton("faq", "FAQ"),
             
             hr(),
         
@@ -420,6 +440,7 @@ ui <- fluidPage(
                           fluidRow(hr()),
                           fluidRow(tags$text("Ihr wollt keine News von CorrelAid e.V. mehr verpassen? Zur Newsletteranmeldung:")),
                           fluidRow(tags$a(href="https://correlaid.us12.list-manage.com/subscribe?u=b294bf2834adf5d89bdd2dd5a&id=175fade988", "Klick hier!")),
+                          fluidRow(hr())
                           )
             )
         )
@@ -428,6 +449,12 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session){
+    
+    # TimeOut stoppen
+    output$keepAlive <- renderText({
+        req(input$count)
+        paste("keep alive ", input$count)
+    })
     
     # Bei Fehlern
     observeEvent(input$disconnect, {
@@ -469,12 +496,77 @@ server <- function(input, output, session){
     })
     
     # Bedienungshilfe
-    hilfe_text <- "Mit dem Datenreifegradmodell könnt Ihr bestimmen, wo Eure Organisation derzeit beim Thema Daten aufgestellt ist, und Euch inspirieren lassen, was noch möglich ist. 
-    Zudem erhaltet Ihr Empfehlungen, wie CorrelAid e.V. Eure Organisation unterstützen kann. Die Antwort A entspricht dabei der Bewertung 1 (=noch nicht ausreichend), Antwort B 2 (=ausreichend), Antwort C 3 (=fortgeschritten) und Antwort D 4 (=ausgezeichnet). 
-    Im Netzdiagramm seht Ihr zudem, wie Ihr im Vergleich zu anderen Organisationen abschneidet, die das Modell bereits bei uns ausgefüllt haben.
-    Bei Anmerkungen oder Fragen zum Modell wendet Euch gerne an: nina.h@correlaid.org"
     observeEvent(input$hilfe, {
-        showModal(modalDialog(hilfe_text, title = "Bedienungshilfe", footer = modalButton("Schließen")))
+        showModal(modalDialog(title = "Bedienungshilfe",
+            HTML("<b>Wie können wir unsere Angaben ändern?</b>
+                <br> 
+                Über das Dropdownmenü links (grau hinterlegt) könnt Ihr jederzeit Eure Angaben ändern. Wir haben die Applikation für Euch dynamisch programmiert, sodass Ihr beobachten könnt, wie sich Eure Ergebnisse ändern, wenn Ihr Euch in bestimmten Themengebieten verbessert.
+                <br>
+                <br>
+                <b>Unsere Eingaben sind verschwunden - was ist passiert?</b>
+                <br>
+                Damit die Applikation funktioniert gibt es irgendwann einen sog. TimeOut - danach sind die Daten leider erstmal weg und Ihr müsst von vorn anfangen. Am besten überlegt Ihr Euch Eure Antworten schon etwas vorher. Die Modelle findet Ihr deshalb auch unter https://correlaid.org/material/datenreifegradmodell.pdf und https://correlaid.org/material/organisationsreifegradmodell.pdf.
+                <br>
+                <br>
+                <b>Was passiert mit unseren Daten?</b>
+                <br>
+                Wir haben unseren Rechner Elmo volldynamisch programmiert und somit die Freiwilligkeit der Datenabgabe über die Leistungsfähigkeit der Applikation gestellt. Solange Ihr nicht auf 'Absenden!' klickt, speichern wir Eure Daten auch nicht. Allerdings freuen wir uns natürlich, wenn Ihr das (gerne auch ohne Organisationsnamen) tut. Mit den Ergebnissen können wir nämlich besser evaluieren, was Ihr braucht, mit Politik und Gesellschaft in den Dialog gehen und Hilfsprogramme aufsetzen und bewerben.
+                <br>
+                <br>
+                <b>Was passiert mit unseren Daten, wenn wir die Ergebnisse absenden?</b>
+                <br>
+                Wir sammeln diese Daten und verwenden sie, um - in aggregierter Form - Studien zum Status der Digitalisierung in der Zivilgesellschaft zu erstellen und Fördergelder für konkrete Hilfsprogramme einzuwerben. Individuelle Organisationen werden dabei nicht namentlich genannt - außer natürlich sie wirken aktiv mit und haben dem ausdrücklich zugestimmt.
+                <br>
+                <br>
+                <b>Etwas stimmt trotzdem nicht?</b>
+                <br>
+                Bei Anmerkungen oder Fragen zur App wendet Euch gerne an: nina.h@correlaid.org
+                "), 
+            footer = modalButton("Schließen")))
+    })
+    
+    # FAQ
+    observeEvent(input$faq, {
+        showModal(modalDialog(title = "FAQ",
+                              HTML("<b>Was bringt uns die Ermittlung des Datenreifegrads?</b>
+                                    <br>
+                                    Habt Ihr Euch schon gefragt, an welchen Punkten Ihr als Organisation in Bezug auf Eure Arbeit mit Daten noch Verbesserungspotenziale habt und wo investierte Ressourcen bereits ausreichen? 
+                                    Mit dem Datenreifegrad lässt sich die interne Organisationsstruktur und Datenlandschaft nach ausgewählten Parametern bewerten.
+                                    Aus den Lücken, die Ihr dabei findet, lassen sich konkrete Handlungsempfehlungen ableiten, die Ihr im Rahmen Eurer Datenstrategie in die Tat umsetzen könnt. 
+                                    <br> 
+                                    <br>
+                                    <b>Was erhalten wir als Ergebnis?</b>
+                                    <br>
+                                    Als Ergebnis zeigt Euch unser Rechner Elmo die Durchschnittswerte, die Ihr auf Grund Eurer Antworten in den Kategorien Aussagekraft der Daten, Datenverarbeitende Systeme, Rechtliche Infratruktur, Organisatorische Infrastruktur und Gesellschaftliche Einbettung erreicht habt.
+                                    Im Netzdiagramm und der Tabelle seht Ihr zudem, wie Ihr im Vergleich zu anderen Organisationen abschneidet, die das Modell bereits bei uns ausgefüllt haben.
+                                    Außerdem erhaltet Ihr Empfehlungen, wie CorrelAid e.V. Eure Organisation bei der Umsetzung Eurer Datenstrategie unterstützen kann.
+                                    <br>
+                                    <br>
+                                    <b>Was bedeutet die Werte in Netzdiagramm und Tabelle?</b>
+                                    <br>
+                                    Die Antwort A entspricht der Bewertung 1 (=noch nicht ausreichend), Antwort B 2 (=ausreichend), Antwort C 3 (=fortgeschritten) und Antwort D 4 (=ausgezeichnet). \n
+                                    <br>
+                                    <br>
+                                    <b>Was passiert mit unseren Daten?</b>
+                                    <br>
+                                    Wir haben unseren Rechner Elmo volldynamisch programmiert und somit die Freiwilligkeit der Datenabgabe über die Leistungsfähigkeit der Applikation gestellt. Solange Ihr nicht auf 'Absenden!' klickt, speichern wir Eure Daten auch nicht. Allerdings freuen wir uns natürlich, wenn Ihr das (gerne auch ohne Organisationsnamen) tut. Mit den Ergebnissen können wir nämlich besser evaluieren, was Ihr braucht, mit Politik und Gesellschaft in den Dialog gehen und Hilfsprogramme aufsetzen und bewerben.
+                                    <br>
+                                    <br>
+                                    <b>Was passiert mit unseren Daten, wenn wir die Ergebnisse absenden?</b>
+                                    <br>
+                                    Wir sammeln diese Daten und verwenden sie, um - in aggregierter Form - Studien zum Status der Digitalisierung in der Zivilgesellschaft zu erstellen und Fördergelder für konkrete Hilfsprogramme einzuwerben. Individuelle Organisationen werden dabei nicht namentlich genannt - außer natürlich sie wirken aktiv mit und haben dem ausdrücklich zugestimmt.
+                                    <br>
+                                    <br>
+                                    <b>Können wir unsere Daten auch ohne Organisationsnamen absenden?</b>
+                                    <br>
+                                    Gerne könnt Ihr das Feld zum Organisationsnamen freilassen, wenn Ihr nicht erkannt werden wollt. Falls Ihr im Anschluss allerdings ein (Bildungs-)Projekt mit uns machen wollt, macht es uns das leichter Euren Datensatz zu finden.
+                                    <br>
+                                    <br>
+                                    <b>Noch mehr Fragen zum Modell?</b>
+                                    <br>
+                                    Bei Anmerkungen oder Fragen zum Modell wendet Euch gerne an: nina.h@correlaid.org
+                                    "), 
+                              footer = modalButton("Schließen")))
     })
     
     # Ergebnisse
