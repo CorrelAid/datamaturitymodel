@@ -416,6 +416,8 @@ ui <- fluidPage(
                           fluidRow(tags$h5("Gesellschaftliche Einbettung")),
                           fluidRow(textOutput("empfehlung_gesellschaftlich")),
                           fluidRow(hr()),
+                          fluidRow(tags$text("Beide Modelle findet Ihr auch als PDF in Druckversion auf unserer Webseite:"), tags$a(href="https://correlaid.org/material/datenreifegradmodell.pdf", "Datenreifegradmodell"), tags$text("-"), tags$a(href="https://correlaid.org/material/organisationsreifegradmodell.pdf", "Organisationreifegradmodell")),
+                          fluidRow(hr()),
                           fluidRow(tags$text("Ihr wollt keine News von CorrelAid e.V. mehr verpassen? Zur Newsletteranmeldung:")),
                           fluidRow(tags$a(href="https://correlaid.us12.list-manage.com/subscribe?u=b294bf2834adf5d89bdd2dd5a&id=175fade988", "Klick hier!")),
                           )
