@@ -193,7 +193,7 @@ ui <- fluidPage(
     tags$head(
         tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "https://correlaid.org/favicons/favicon-32x32.png"),
         tags$style(
-        HTML("
+            HTML("
             <script>
           var socket_timeout_interval
           var n = 0
@@ -238,187 +238,200 @@ ui <- fluidPage(
     # Titel
     titlePanel(
         fluidRow(
-            column(10, tags$h2("Datenreifegrad - Wo steht Eure Organisation?")), 
+            column(10, tags$h2("Datenreifegrad - Wo steht Eure Organisation?"), HTML('<h5><em>Habt Ihr Euch schon gefragt, an welchen Punkten Ihr als Organisation in Bezug auf Eure Arbeit mit Daten noch Verbesserungspotenziale habt und wo investierte Ressourcen bereits ausreichen? Findet es hier heraus!</h5></em>')),
             column(1, HTML('<center><img src="https://betterplace-assets.betterplace.org/uploads/organisation/profile_picture/000/033/251/crop_original_bp1613490681_Logo.jpg" width="75"></center>'))
-            )),
+        )),
     # Layout
     sidebarLayout(
         sidebarPanel(id = "tPanel", style = "overflow-y:scroll; max-height: 600px; position:relative;",
-            tags$text('Wählt in den nächsten 20 Fragen die Antwort aus, die Eure Organisation am besten beschreibt:'),
-            
-            hr(),
-            
-            ## Dateninhalt
-            ### Relevanz
-            selectInput("relevant",
-                        "Aussagekraft der Daten - Relevanz und Vollständigkeit",
-                        choices = q1_relevant$keys,
-                        selected = "A) Zwischen tatsächlicher Datenlage und Datenbedarf liegt eine hohe Diskrepanz vor"
-                        ),
-            ### Granularität
-            selectInput("granularity",
-                        "Aussagekraft der Daten - Granularität",
-                        choices = q2_granularity$keys,
-                        selected = "A) Gesamtheitlich aggregiert (z.B. absolute Teilnehmerzahl)"
-            ),
-            ### Erhebung
-            selectInput("collection",
-                        "Aussagekraft der Daten - Erhebungsfrequenz",
-                        choices = q3_collection$keys,
-                        selected = "A) Einmalig"
-            ),
-            
-            ### Qualität
-            selectInput("quality",
-                        "Aussagekraft der Daten - Qualität",
-                        choices = q4_quality$keys,
-                        selected = "A) Es fehlen Datenpunkte (Individuen oder Einheiten)"
-            ),
-            
-            ## Datenverarbeitende Systeme
-            ### Speicherung
-            selectInput("storage",
-                        "Datenverarbeitende Systeme - Speicherung",
-                        choices = q5_storage$keys,
-                        selected = "A) Papier oder PDFs/Bilder"
-            ),
-            
-            ### Analyse
-            selectInput("analysis",
-                        "Datenverarbeitende Systeme - Analyse",
-                        choices = q6_analysis$keys,
-                        selected = "A) Keine oder nur rudimentäre Analysen"
-            ),
-            
-            ### Zugang
-            selectInput("access",
-                        "Datenverarbeitende Systeme - Zugang",
-                        choices = q7_access$keys,
-                        selected = "A) Nur in der Anwendung verfügbar, in der die Daten erhoben werden"
-            ),
-            
-            ### Integration
-            selectInput("integration",
-                        "Datenverarbeitende Systeme - Integration",
-                        choices = q8_integration$keys,
-                        selected = "A) Daten sind in individuellen Anwendungen verfügbar"
-            ),
-            
-            ### Datenschutz
-            selectInput("dsgvo",
-                        "Rechtliche Infrastruktur - Allgemeiner Datenschutz",
-                        choices = q9_dsgvo$keys,
-                        selected = "A) Nicht implementiert"
-            ),
-            
-            ### Dokumentation
-            selectInput("doku",
-                        "Rechtliche Infrastruktur - Dokumentation von Daten",
-                        choices = q10_doku$keys,
-                        selected = "A) Keine Dokumentation zu Variablen"
-            ),
-            
-            ### Datennutzungsrechte
-            selectInput("user",
-                        "Rechtliche Infrastruktur - Datennutzungsrechte",
-                        choices = q11_user$keys,
-                        selected = "A) Es gibt kein Konzept zur Datennutzung und zu Zugangsrechten"
-            ),
-            
-            ### History
-            selectInput("history",
-                        "Rechtliche Infrastruktur - Historie",
-                        choices = q12_history$keys,
-                        selected = "A) Historische Daten werden gelöscht"
-            ),
-            
-            ### Organisation
-            selectInput("orga",
-                        "Organisatorische Reifegrad - insgesamt",
-                        choices = q13_orga$keys,
-                        selected = "A) Arbeitnehmer:innen wissen, dass Daten existieren, aber noch nicht, was diese enthalten und wozu diese genutzt werden können"
-            ),
-            
-            ### Management
-            selectInput("mgmt",
-                        "Organisatorische Reifegrad - Management",
-                        choices = q14_mgmt$keys,
-                        selected = "A) Dem Management ist der Nutzen von Daten noch unklar"
-            ),
-            
-            ### Programmatisches Personal
-            selectInput("pm",
-                        "Organisatorische Reifegrad - Programmatisches Personal",
-                        choices = q15_pm$keys,
-                        selected = "A) Arbeitnehmer:innen, die für die Erhebung von Daten zuständig sind, sehen diese als notwendige Verpflichtung, der sie nur unregelmäßig nachkommen"
-            ),
-            
-            ### Analytisches/technisches Personal
-            selectInput("quant",
-                        "Organisatorische Reifegrad - Analytisches/technisches Personal",
-                        choices = q16_quant$keys,
-                        selected = "A) Der Organisation steht kein Personal zur Verfügung, das mit erhobenen Daten arbeiten kann"
-            ),
-            
-            ### Fördernde
-            selectInput("funding",
-                        "Gesellschaftliche Einbettung - Fördernde",
-                        choices = q17_funding$keys,
-                        selected = "A) Fördernde verlangen lediglich qualitative Berichte und Zahlen zu oberflächlichen Indikatoren"
-            ),
-            
-            ### Partnerschaften
-            selectInput("partners",
-                        "Gesellschaftliche Einbettung - Partnerschaften",
-                        choices = q18_partners$keys,
-                        selected = "A) Es gibt keine Partnerschaften"
-            ),
-            
-            ### Dienstleistende
-            selectInput("extern",
-                        "Gesellschaftliche Einbettung - Dienstleistende",
-                        choices = q19_extern$keys,
-                        selected = "A) Es gibt keinerlei externe Unterstützung"
-            ),
-            
-            ### Bildungsangebote
-            selectInput("education",
-                        "Gesellschaftliche Einbettung - Bildungsangebote",
-                        choices = q20_education$keys,
-                        selected = "A) Es gibt keine Bildungsangebote rund um das Thema Daten/IT"
-            ),
-            
-            hr(),
-            # Textinput Organisation
-            textInput('name', 'Gebt hier den Namen Eurer Organisation an:', value = 'unbekannte Organisation'), 
-        
-            # Arbeitsbreich auswählen
-            selectInput('type', 'In welchem Bereich ist Eure Organisation aktiv?', selected = 'Sonstige', 
-                        choices = c('Beschäftigung', 'Bildung und Forschung', 'Gesundheit', ' Katastrophenhilfe',
-                                    'Kommunale Entwicklung und Wohnen', 'Kunst, Kultur und Sport', 'Migration',
-                                    'Philantrophische Intermediaries und Förderung des Ehrenamts', 'Recht, Advocacy und Politik',
-                                    'Religion', 'Soziale Dienstleistungen', 'Umwelt', 'Sonstige')),
-            
-            # Einfügen eines Submit-Buttons
-            actionButton("ergebnisse", "Absenden!"),
-            
-            # Einfügen eines Hilfefensters
-            actionButton("hilfe", "Hilfe"),
-            
-            # Einfügen eines Hilfefensters
-            actionButton("faq", "FAQ"),
-            
-            hr(),
-        
-            # Textoutput Organisation
-            textOutput('orga')
-            ),
+                     tags$text('Wählt in den nächsten 20 Fragen die Antwort aus, die Eure Organisation am besten beschreibt:'),
+                     
+                     hr(),
+                     
+                     ## Dateninhalt
+                     tags$h4("Aussagekraft Eurer Daten"),
+                     
+                     ### Relevanz
+                     selectInput("relevant",
+                                 "Relevanz und Vollständigkeit",
+                                 choices = q1_relevant$keys,
+                                 selected = "A) Zwischen tatsächlicher Datenlage und Datenbedarf liegt eine hohe Diskrepanz vor"
+                     ),
+                     ### Granularität
+                     selectInput("granularity",
+                                 "Granularität",
+                                 choices = q2_granularity$keys,
+                                 selected = "A) Gesamtheitlich aggregiert (z.B. absolute Teilnehmerzahl)"
+                     ),
+                     ### Erhebung
+                     selectInput("collection",
+                                 "Erhebungsfrequenz",
+                                 choices = q3_collection$keys,
+                                 selected = "A) Einmalig"
+                     ),
+                     
+                     ### Qualität
+                     selectInput("quality",
+                                 "Aussagekraft der Daten - Qualität",
+                                 choices = q4_quality$keys,
+                                 selected = "A) Es fehlen Datenpunkte (Individuen oder Einheiten)"
+                     ),
+                     
+                     ## Datenverarbeitende Systeme
+                     tags$h4("Datenverarbeitende Systeme"),
+                     
+                     ### Speicherung
+                     selectInput("storage",
+                                 "Speicherung",
+                                 choices = q5_storage$keys,
+                                 selected = "A) Papier oder PDFs/Bilder"
+                     ),
+                     
+                     ### Analyse
+                     selectInput("analysis",
+                                 "Analyse",
+                                 choices = q6_analysis$keys,
+                                 selected = "A) Keine oder nur rudimentäre Analysen"
+                     ),
+                     
+                     ### Zugang
+                     selectInput("access",
+                                 "Zugang",
+                                 choices = q7_access$keys,
+                                 selected = "A) Nur in der Anwendung verfügbar, in der die Daten erhoben werden"
+                     ),
+                     
+                     ### Integration
+                     selectInput("integration",
+                                 "Integration",
+                                 choices = q8_integration$keys,
+                                 selected = "A) Daten sind in individuellen Anwendungen verfügbar"
+                     ),
+                     
+                     ##Rechtliche Infrastruktur
+                     tags$h4("Rechtliche Infrastruktur - "),
+                     
+                     ### Datenschutz
+                     selectInput("dsgvo",
+                                 "Allgemeiner Datenschutz",
+                                 choices = q9_dsgvo$keys,
+                                 selected = "A) Nicht implementiert"
+                     ),
+                     
+                     ### Dokumentation
+                     selectInput("doku",
+                                 "Dokumentation von Daten",
+                                 choices = q10_doku$keys,
+                                 selected = "A) Keine Dokumentation zu Variablen"
+                     ),
+                     
+                     ### Datennutzungsrechte
+                     selectInput("user",
+                                 "Datennutzungsrechte",
+                                 choices = q11_user$keys,
+                                 selected = "A) Es gibt kein Konzept zur Datennutzung und zu Zugangsrechten"
+                     ),
+                     
+                     ### History
+                     selectInput("history",
+                                 "Historie",
+                                 choices = q12_history$keys,
+                                 selected = "A) Historische Daten werden gelöscht"
+                     ),
+                     
+                     ## Organisatorische Reifegrad
+                     tags$h4("Organisatorischer Reifegrad"),
+                     
+                     ### Organisation
+                     selectInput("orga",
+                                 "Organisationsweit",
+                                 choices = q13_orga$keys,
+                                 selected = "A) Arbeitnehmer:innen wissen, dass Daten existieren, aber noch nicht, was diese enthalten und wozu diese genutzt werden können"
+                     ),
+                     
+                     ### Management
+                     selectInput("mgmt",
+                                 "Management",
+                                 choices = q14_mgmt$keys,
+                                 selected = "A) Dem Management ist der Nutzen von Daten noch unklar"
+                     ),
+                     
+                     ### Programmatisches Personal
+                     selectInput("pm",
+                                 "Programmatisches Personal",
+                                 choices = q15_pm$keys,
+                                 selected = "A) Arbeitnehmer:innen, die für die Erhebung von Daten zuständig sind, sehen diese als notwendige Verpflichtung, der sie nur unregelmäßig nachkommen"
+                     ),
+                     
+                     ### Analytisches/technisches Personal
+                     selectInput("quant",
+                                 "Analytisches/technisches Personal",
+                                 choices = q16_quant$keys,
+                                 selected = "A) Der Organisation steht kein Personal zur Verfügung, das mit erhobenen Daten arbeiten kann"
+                     ),
+                     
+                     ## Gesellschaftliche Einbettung
+                     tags$h4("Gesellschaftliche Einbettung"),
+                     
+                     ### Fördernde
+                     selectInput("funding",
+                                 "Fördernde",
+                                 choices = q17_funding$keys,
+                                 selected = "A) Fördernde verlangen lediglich qualitative Berichte und Zahlen zu oberflächlichen Indikatoren"
+                     ),
+                     
+                     ### Partnerschaften
+                     selectInput("partners",
+                                 "Partnerschaften",
+                                 choices = q18_partners$keys,
+                                 selected = "A) Es gibt keine Partnerschaften"
+                     ),
+                     
+                     ### Dienstleistende
+                     selectInput("extern",
+                                 "Dienstleistende",
+                                 choices = q19_extern$keys,
+                                 selected = "A) Es gibt keinerlei externe Unterstützung"
+                     ),
+                     
+                     ### Bildungsangebote
+                     selectInput("education",
+                                 "Bildungsangebote",
+                                 choices = q20_education$keys,
+                                 selected = "A) Es gibt keine Bildungsangebote rund um das Thema Daten/IT"
+                     ),
+                     
+                     hr(),
+                     # Textinput Organisation
+                     textInput('name', 'Gebt hier den Namen Eurer Organisation an:', value = 'unbekannte Organisation'), 
+                     
+                     # Arbeitsbreich auswählen
+                     selectInput('type', 'In welchem Bereich ist Eure Organisation aktiv?', selected = 'Sonstige', 
+                                 choices = c('Beschäftigung', 'Bildung und Forschung', 'Gesundheit', ' Katastrophenhilfe',
+                                             'Kommunale Entwicklung und Wohnen', 'Kunst, Kultur und Sport', 'Migration',
+                                             'Philantrophische Intermediaries und Förderung des Ehrenamts', 'Recht, Advocacy und Politik',
+                                             'Religion', 'Soziale Dienstleistungen', 'Umwelt', 'Sonstige')),
+                     
+                     # Einfügen eines Submit-Buttons
+                     actionButton("ergebnisse", "Absenden!"),
+                     
+                     # Einfügen eines Hilfefensters
+                     actionButton("hilfe", "Hilfe"),
+                     
+                     # Einfügen eines Hilfefensters
+                     actionButton("faq", "FAQ"),
+                     
+                     hr(),
+                     
+                     # Textoutput Organisation
+                     textOutput('orga')
+        ),
         # Show a plot of the generated distribution
         mainPanel(
             tabsetPanel(
                 tabPanel("Ergebnisse",
-                        fluidRow(plotlyOutput('radarplot')),
-                        fluidRow(plotlyOutput('tabelle')),
+                         fluidRow(plotlyOutput('radarplot')),
+                         fluidRow(plotlyOutput('tabelle')),
                 ),
                 tabPanel ("Empfehlungen",
                           fluidRow(tags$h5("Aussagekraft Eurer Daten")),
@@ -441,7 +454,7 @@ ui <- fluidPage(
                           fluidRow(tags$text("Ihr wollt keine News von CorrelAid e.V. mehr verpassen? Zur Newsletteranmeldung:")),
                           fluidRow(tags$a(href="https://correlaid.us12.list-manage.com/subscribe?u=b294bf2834adf5d89bdd2dd5a&id=175fade988", "Klick hier!")),
                           fluidRow(hr())
-                          )
+                )
             )
         )
     )
@@ -491,14 +504,14 @@ server <- function(input, output, session){
                                             q18_partners$get(input$partners),
                                             q19_extern$get(input$extern),
                                             q20_education$get(input$education)
-                                        )))
+        )))
         sheet_append(ss = '10YlWyJzaDFer6rqKFTAYkXLuhcC9JgynSRmSUa5AnUk', data = ergebnisse, sheet = "Daten")
     })
     
     # Bedienungshilfe
     observeEvent(input$hilfe, {
         showModal(modalDialog(title = "Bedienungshilfe",
-            HTML("<b>Wie können wir unsere Angaben ändern?</b>
+                              HTML("<b>Wie können wir unsere Angaben ändern?</b>
                 <br> 
                 Über das Dropdownmenü links (grau hinterlegt) könnt Ihr jederzeit Eure Angaben ändern. Wir haben die Applikation für Euch dynamisch programmiert, sodass Ihr beobachten könnt, wie sich Eure Ergebnisse ändern, wenn Ihr Euch in bestimmten Themengebieten verbessert.
                 <br>
@@ -522,7 +535,7 @@ server <- function(input, output, session){
                 <br>
                 Bei Anmerkungen oder Fragen zur App wendet Euch gerne an: nina.h@correlaid.org
                 "), 
-            footer = modalButton("Schließen")))
+                              footer = modalButton("Schließen")))
     })
     
     # FAQ
@@ -661,7 +674,7 @@ server <- function(input, output, session){
             ) %>%
             config(staticPlot = TRUE)
     })
-        
+    
     # Tabelle
     output$tabelle <- renderPlotly({
         # Tabelle designen
@@ -691,7 +704,7 @@ server <- function(input, output, session){
             print("Mit Euren Daten könnt Ihr auf Grund fehlender Indikatoren, Granularität oder Qualität durch zu geringe Erhebungsfrequenz oder Fehleingaben keine gültigen Aussagen treffen? In einem datenstrategischen Projekt analysieren wir Euren Datenbestand hinsichtlich dieser Kriterien und geben Euch Empfehlungen, wie Ihr in Zukunft besser Daten generieren könnt. Dazu gehört auch die Ausarbeitung von Erhebungstools wie Umfragen und automatisierten Datenschnittstellen (APIs) zu internen und externen Datensätzen.")
         }
         else print("Inhaltlich könnt Ihr mit Euren Daten bereits gut arbeiten. Ihr vermutet, es gibt an einigen Stellen trotzdem noch Verbesserungspotenzial? Lasst Euch von unserer Projektmanager:innen beraten.")
-        })
+    })
     
     # systemisch -> projekt
     output$empfehlung_systemisch <- renderText({
