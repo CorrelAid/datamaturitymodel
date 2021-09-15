@@ -402,15 +402,15 @@ ui <- fluidPage(
                      ),
                      
                      hr(),
-                     # Textinput Organisation
-                     textInput('name', 'Gebt hier den Namen Eurer Organisation an:', value = 'unbekannte Organisation'), 
-                     
                      # Arbeitsbreich auswählen
                      selectInput('type', 'In welchem Bereich ist Eure Organisation aktiv?', selected = 'Sonstige', 
                                  choices = c('Beschäftigung', 'Bildung und Forschung', 'Gesundheit', ' Katastrophenhilfe',
                                              'Kommunale Entwicklung und Wohnen', 'Kunst, Kultur und Sport', 'Migration',
                                              'Philantrophische Intermediaries und Förderung des Ehrenamts', 'Recht, Advocacy und Politik',
                                              'Religion', 'Soziale Dienstleistungen', 'Umwelt', 'Sonstige')),
+                     
+                     # Textinput Organisation
+                     textInput('name', 'Gebt hier den Namen Eurer Organisation an:', value = 'unbekannte Organisation'), 
                      
                      # Einfügen eines Submit-Buttons
                      actionButton("ergebnisse", "Absenden!"),
