@@ -410,7 +410,7 @@ ui <- fluidPage(
                                              'Religion', 'Soziale Dienstleistungen', 'Umwelt', 'Sonstige')),
                      
                      # Textinput Organisation
-                     textInput('name', 'Gebt hier den Namen Eurer Organisation an:', value = 'unbekannte Organisation'), 
+                     textInput('name', 'Wie heißt Eure Organisation?', value = 'unbekannte Organisation'), 
                      
                      # Einfügen eines Submit-Buttons
                      actionButton("ergebnisse", "Absenden!"),
