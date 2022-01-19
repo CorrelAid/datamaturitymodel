@@ -171,17 +171,17 @@ q18_partners <- Dict$new(
     "C) In Partnerschaften werden punktuell Daten geteilt" = 3,
     "D) Der Austausch von Daten und Analysen ist Bestandteil von Partnerschaften" = 4)
 
-### Dienstleitende
+### Dienstleistende
 q19_extern <- Dict$new(
     "A) Es gibt keinerlei externe Unterstützung" = 1,
     "B) Externe bieten punktuell pro-bono technische/analytische Unterstützung" = 2,
     "C) Externe bieten langfristig pro-bono technische/analytische Unterstützung" = 3,
-    "D) Externe haben einen langfristigen vergüteten Betreuungsauftrag (alt.: alles ist Inhouse)" = 4)
+    "D) Externe haben einen langfristigen vergüteten Betreuungsauftrag (alternativ: alles ist Inhouse)" = 4)
 
 ### Speicherformat
 q20_education <- Dict$new(
     "A) Es gibt keine Bildungsangebote rund um das Thema Daten/IT" = 1,
-    "B) Es wird unterstützt, wenn Mitarbeiten-de sich extern zu Daten/IT fortbilden" = 2,
+    "B) Es wird unterstützt, wenn Mitarbeitende sich extern zu Daten/IT fortbilden" = 2,
     "C) Mitarbeitende werden für Daten/IT-Fortbildungen vergütet freigestellt" = 3,
     "D) Mitarbeitende werden für Daten/IT-Fortbildungen vergütet freigestellt und diese bezahlt" = 4)
 
@@ -509,8 +509,8 @@ server <- function(input, output, session){
         
         # Dialogfenster Ergebnisse abgeschickt!
         showModal(modalDialog(
-            title = "Danke für Eure Eingabe!",
-            HTML("Mit Eurer Datenspende können wir Bedarfe in der Zivilgesellschaft besser analysieren. Viel Spaß mit Euren Ergebnissen."),
+            title = "Danke für Eure Eingabe",
+            HTML("Mit Eurer Datenspende können wir Bedarfe in der Zivilgesellschaft besser analysieren. Viel Spaß mit Euren Ergebnissen!"),
             footer = modalButton("Schließen")
         ))
     })
