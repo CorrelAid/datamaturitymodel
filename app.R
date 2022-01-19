@@ -567,6 +567,11 @@ server <- function(input, output, session){
                                     Die Antwort A entspricht der Bewertung 1 (=noch nicht ausreichend), Antwort B 2 (=ausreichend), Antwort C 3 (=fortgeschritten) und Antwort D 4 (=ausgezeichnet). \n
                                     <br>
                                     <br>
+                                    <b> Wie habt Ihr das Modell entwickelt? </b>
+                                    <br>
+                                    Unser Modell ist inspiriert vom Data Maturity Framework des Centers for Data Science & Public Policy an der University of Chicago. Auf Basis unserer langjährigen Projekterfahrung haben wir die Kategorien angepasst und überarbeitet und eigene Kategorien entwickelt, die uns im Modell noch fehlten.
+                                    <br>
+                                    <br>
                                     <b>Was passiert mit unseren Daten?</b>
                                     <br>
                                     Wir haben unseren Rechner Elmo volldynamisch programmiert und somit die Freiwilligkeit der Datenabgabe über die Leistungsfähigkeit der Applikation gestellt. Solange Ihr nicht auf 'Absenden!' klickt, speichern wir Eure Daten auch nicht. Allerdings freuen wir uns natürlich, wenn Ihr das (gerne auch ohne Organisationsnamen) tut. Mit den Ergebnissen können wir nämlich besser evaluieren, was Ihr braucht, mit Politik und Gesellschaft in den Dialog gehen und Hilfsprogramme aufsetzen und bewerben.
