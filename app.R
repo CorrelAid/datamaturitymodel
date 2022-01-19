@@ -506,6 +506,13 @@ server <- function(input, output, session){
                                             q20_education$get(input$education)
         )))
         sheet_append(ss = '10YlWyJzaDFer6rqKFTAYkXLuhcC9JgynSRmSUa5AnUk', data = ergebnisse, sheet = "Daten")
+        
+        # Dialogfenster Ergebnisse abgeschickt!
+        showModal(modalDialog(
+            title = "Danke für Eure Eingabe!",
+            HTML("Mit Eurer Datenspende können wir Bedarfe in der Zivilgesellschaft besser analysieren. Viel Spaß mit Euren Ergebnissen."),
+            footer = modalButton("Schließen")
+        ))
     })
     
     # Bedienungshilfe
