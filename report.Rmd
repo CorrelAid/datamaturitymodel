@@ -1,0 +1,228 @@
+---
+title: Die Ergebnisse Eures Daten- und Organisationsreifegradmodels
+date: "`r format(Sys.Date(), '%d.%m.%Y')`"
+output:
+  pdf_document: default
+always_allow_html: yes 
+classoption: 
+- twocolumn
+- landscape
+header-includes:
+    - \usepackage{fancyhdr}
+params:
+  name: Unbekannte Organisation
+  ergebnisse_systemisch: 1
+  ergebnisse_inhaltlich: 1
+  ergebnisse_organisatorisch: 1
+  ergebnisse_gesellschaftlich: 1
+  ergebnisse_rechtlich: 1
+  durchschnitt_systemisch: 1
+  durchschnitt_inhaltlich: 1
+  durchschnitt_organisatorisch: 1
+  durchschnitt_gesellschaftlich: 1
+  durchschnitt_rechtlich: 1
+---
+\addtolength{\headheight}{1.0cm}
+\pagestyle{fancyplain}
+\rhead{\includegraphics[height=1.2cm]{logo.png}}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\headsep}{0cm}
+<br>
+
+```{r setup, include=FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(plotly)
+library(gargle)
+library(Dict)
+library(gridExtra)
+library(webshot)
+webshot::install_phantomjs()
+```
+
+```{r prep}
+# Tabellarische Ergebnisse
+dataframe <- matrix(c(round(params$durchschnitt_inhaltlich,2),
+               round(params$durchschnitt_systemisch,2),
+               round(params$durchschnitt_rechtlich,2),
+               round(params$durchschnitt_organisatorisch,2),
+               round(params$durchschnitt_gesellschaftlich,2),
+               params$ergebnisse_inhaltlich, 
+               params$ergebnisse_systemisch, 
+               params$ergebnisse_rechtlich, 
+               params$ergebnisse_organisatorisch,
+               params$ergebnisse_gesellschaftlich), 
+               nrow=5, byrow=FALSE) # in DataFrame konvertieren (notwendige für den Grid)
+colnames(dataframe) <- c('Durchschnitt', 'Dein Ergebnis') # Spaltennamen anpassen
+rownames(dataframe) <- c('Inhaltlich', 'Systemisch', 'Rechtlich', 'Organisatorisch', 'Gesellschaftlich')
+```
+
+## Netzdiagramm
+```{r netdiagram, fig.width = 8, fig.align = "center"}
+#Plot
+  #make plot
+plot_ly(type = 'scatterpolar',
+          mode   = 'markers',
+          fill = 'toself') %>%
+    # averages
+    add_trace(
+      r = c(
+        params$durchschnitt_systemisch,
+        params$durchschnitt_inhaltlich,
+        params$durchschnitt_organisatorisch,
+        params$durchschnitt_gesellschaftlich,
+        params$durchschnitt_rechtlich
+      ),
+      theta = c(
+        'Systemisch',
+        'Inhaltlich',
+        'Organisatorisch',
+        'Gesellschaftlich',
+        'Rechtlich'
+      ),
+      name = 'Durchschnitt',
+      color = I("light gray")
+    ) %>%
+    # results
+    add_trace(
+      r = c(
+        params$ergebnisse_systemisch,
+        params$ergebnisse_inhaltlich,
+        params$ergebnisse_organisatorisch,
+        params$ergebnisse_gesellschaftlich,
+        params$ergebnisse_rechtlich
+      ),
+      theta = c(
+        'Systemisch',
+        'Inhaltlich',
+        'Organisatorisch',
+        'Gesellschaftlich',
+        'Rechtlich'
+      ),
+      name = 'Dein Ergebnis',
+      mode   = 'markers',
+      color = I("#357699")
+    ) %>%
+    # layout
+    layout(polar = list(radialaxis = list(
+      visible = T,
+      range = c(0, 4),
+      angle = 0 #begin of axis
+    )))
+```
+
+## Tabelle
+```{r table, fig.width = 8, fig.align = "center"}
+# Tabelle designen
+plot_ly(
+  type = 'table',
+  columnwidth = c(50, 50, 50),
+  columnorder = c(0, 1, 2),
+  header = list(
+    values = c('Thematischer Fokus', 'Durchschnitt', 'Dein Ergebnis'),
+    align = c("center", "center", "center"),
+    line = list(width = 1, color = 'black'),
+    fill = list(color = c("black", "lightgray", "#8FAFC1")),
+    font = list(
+      family = "Arial",
+      size = 14,
+      color = "white"
+    )
+  ),
+  cells = list(
+    values = rbind(rownames(dataframe), dataframe[, 1], dataframe[, 2]),
+    align = c("center", "center", "center"),
+    line = list(color = "black", width = 1),
+    font = list(
+      family = "Arial",
+      size = 12,
+      color = c("black")
+    )
+  )
+) %>%
+  config(staticPlot = TRUE)
+```
+
+*Dieser Bericht wurden automatisiert erstellt für: `r params$name`*
+
+\newpage
+\pagestyle{fancyplain}
+## Erklärungen
+### Über das Datenreifegradmodell
+Habt Ihr Euch schon gefragt, an welchen Punkten Ihr als Organisation in Bezug auf Eure Arbeit mit Daten noch Verbesserungspotenziale habt und wo investierte Ressourcen bereits ausreichen? Mit dem Datenreifegrad lässt sich die interne Organisationsstruktur und Datenlandschaft nach ausgewählten Parametern bewerten. Aus den Lücken, die Ihr dabei findet, lassen sich konkrete Handlungsempfehlungen ableiten, die Ihr im Rahmen Eurer Datenstrategie in die Tat umsetzen könnt.
+
+Unser Modell ist inspiriert vom Data Maturity Framework des Centers for Data Science & Public Policy an der University of Chicago. Auf Basis unserer langjährigen Projekterfahrung haben wir die Kategorien angepasst und überarbeitet und eigene Kategorien entwickelt, die uns im Modell noch fehlten.
+ 
+### Einordnung Eurer Ergebnisse
+Die Antwort A entspricht der Bewertung 1 (= noch nicht ausreichend), Antwort B 2 (= ausreichend), Antwort C 3 (= fortgeschritten) und Antwort D 4 (= ausgezeichnet). Die beiden Modelle mit allen Kategorien und Stufen findet Ihr auch als PDF in Druckversion auf unserer Webseite:
+
+  - [Datenreifegradmodell](https://correlaid.org/material/datenreifegradmodell.pdf)(https://correlaid.org/material/datenreifegradmodell.pdf)
+  
+  - [Organisationreifegradmodell](https://correlaid.org/material/organisationsreifegradmodell.pdf)(https://correlaid.org/material/organisationsreifegradmodell.pdf)
+
+### Habt Ihr noch Anmerkungen oder Fragen?
+Bei Anmerkungen oder Fragen zum Modell wendet Euch gerne an: <br> nina.h@correlaid.org
+
+\newpage
+\pagestyle{plain}
+## Empfehlungen
+### Aussagekraft Eurer Daten
+```{r, results = 'asis'}
+# inhaltlich -> projekt
+if (params$ergebnisse_inhaltlich < 2) {
+    cat("Mit Euren Daten könnt Ihr auf Grund fehlender Indikatoren, Granularität oder Qualität durch zu geringe Erhebungsfrequenz oder Fehleingaben keine gültigen Aussagen treffen? In einem datenstrategischen Projekt analysieren wir Euren Datenbestand hinsichtlich dieser Kriterien und geben Euch Empfehlungen, wie Ihr in Zukunft besser Daten generieren könnt. Dazu gehört auch die Ausarbeitung von Erhebungstools wie Umfragen und automatisierten Datenschnittstellen (APIs) zu internen und externen Datensätzen.")
+  } else {
+    cat("Inhaltlich könnt Ihr mit Euren Daten bereits gut arbeiten. Ihr vermutet, es gibt an einigen Stellen trotzdem noch Verbesserungspotenzial? Lasst Euch von unseren Projektmanager:innen beraten.")
+}
+```
+<br>
+Unsere Projektmanagerin Frie Preu erreicht Ihr unter: <br> frie.p@correlaid.org.
+
+### Datenverarbeitende Systeme
+```{r, results = 'asis'}
+# systemisch -> projekt
+if (params$ergebnisse_systemisch < 2) {
+    cat("Um mit Daten arbeiten zu können, benötigt es Systeme zur Speicherung und Analyse. Idealerweise sind diese miteinander verknüpft und erlauben den Zugriff auf Daten system- und organisationsweit. Bei dem Aufbau Eurer Systemlandschaft können Euch ehrenamtliche Datenanalyst:innen von CorrelAid e.V. unterstützen.")
+} else {
+  cat("Ihr besitzt bereits ausgeklügelte datenverarbeitende Systeme. Trotzdem möchtet Ihr diese noch verbessern oder benötigt ein weiteres Analystetool? Wir beraten Euch gerne.")
+  }
+```
+<br>
+Auch hier kann unsere Projektmanagerin Frie Preu (frie.p@correlaid.org) Euch weiterhelfen. Unsere vergangenen Projekte - für alle, die noch Inspiration suchen - findet Ihr unsere [Projektbeispiele](https://correlaid.org/nonprofits/projects/) auch auf unserer Webseite (https://correlaid.org/nonprofits/projects/).
+
+### Rechtliche Infrastruktur
+```{r, results = 'asis'}
+# rechtlich -> datensprechstunde
+if (params$ergebnisse_rechtlich < 2) {
+    cat("Bei der Verarbeitung von Daten entstehen Verpflichtungen rund um Datenschutz (u.a. DSGVO) und Dokumentation. Nicht zuletzt müsst Ihr insbesondere personenbezogene Daten systemisch und organisatorisch angemessen schützen und ihre Verarbeitung dokumentieren. In unserer Datensprechstunde vermitteln wir punktuell Wissen rund um das Thema.")
+} else {
+  cat("Bei Euren datenverarbeitenden Prozesse macht Ihr Euch bereits umfangreich Gedanken um die rechtlichen Rahmenbedingungen. Für verbliebene Fragen könnt Ihr uns natürlich gerne in der Datensprechstunde kontaktieren.")
+  }
+```
+<br>
+Zur Buchung einer Datensprechstunde geht es [hier](https://calendly.com/correlaid/30min) (https://calendly.com/correlaid/30min).
+
+### Organisatorischer Reifegrad
+```{r, results = 'asis'}
+# organisatorisch -> workshop
+if (params$ergebnisse_organisatorisch < 2) {
+    cat("Den Aufbau Eurer Datenstrategie können wir ebenfalls durch ein Projekt betreuuen. Um Eure Orgsanisation fit für die Zukunft zu machen, bieten wir auch verschiedene Bildungsformate an: Von datenstragtegischen Formaten, mit denen auch non-data natives Projektideen mitkonzeptionieren können, bis hin zu Programmierworkshops für Anfänger:innen.")
+} else {
+  cat("Eure Organisation verfügt bereits über eine Datenstrategie und ausreichende Kompetenzen im Team. Wenn Ihr punktuell trotzdem Eure Fähigkeiten ausbauen wollt, sind unsere Workshopformate für Euch die richtige Wahl.")
+}
+```
+<br>
+Unsere Koordinatorin für datenwissenschaftliche Bildung Nina Hauser erreicht Ihr unter nina.h@correlaid.org. Geplante Events findet Ihr auf unserer [Webseite](https://correlaid.org/events/) (https://correlaid.org/events/).
+
+### Gesellschaftliche Einbettung
+```{r, results = 'asis'}
+# gesellschaftlich -> correlcon
+if (params$ergebnisse_gesellschaftlich < 2) {
+    cat("In unserem Netzwerk finden nicht nur gleichgesinnte Datenanalyst:innen einander, auch gemeinnützige Organisationen und solche, die diese fördern wollen, tauschen sich aus. Besonders auf der CorrelCon, die jedes Jahr im November stattfindet, könnt Ihr Euch vernetzen. Gerne unterstützen wir Euch auch in einer längeren Partnerschaft bei dem Aufbau Eurer Datenlandschaft - durch die Vermittlung von Wissen und durch die praktische Umsetzung Eurer Ideen.")
+} else {
+  cat("Wo Ihr steht, ist für uns die Zukunftsvision für den gesamten dritten Sektor: Fördernde und Partner:innen Eurer Organisation arbeiten genauso evidenzbasiert wie Ihr. Unterstützung erhaltet Ihr zudem durch die Bildungs- und Umsetzungsangebote zu Datenthemen externer Dienstleister:innen wie CorrelAid e.V.")
+}
+```
+<br>
+
+Ihr wollt keine News von CorrelAid e.V. mehr verpassen? Zur Newsletteranmeldung: [Klick hier](https://correlaid.us12.list-manage.com/subscribe?u=b294bf2834adf5d89bdd2dd5a&id=175fade988) (https://correlaid.us12.list-manage.com/subscribe?u=b294bf2834adf5d89bdd2dd5a&id=175fade988)!

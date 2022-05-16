@@ -1,0 +1,13 @@
+name: test
+title: test
+username:
+account: correlaid
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5484367
+bundleId: 5502756
+url: https://correlaid.shinyapps.io/test/
+when: 1643044885.46882
+lastSyncTime: 1643044885.46883
+asMultiple: FALSE
+asStatic: FALSE

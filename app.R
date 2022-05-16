@@ -424,7 +424,13 @@ ui <- fluidPage(
                      hr(),
                      
                      # Textoutput Organisation
-                     textOutput('orga')
+                     textOutput('orga'),
+                     
+                     hr(),
+                     
+                     # Einfügen eines Download-Buttons
+                     downloadButton('downloadbutton', label = "Ergebnisse als PDF speichern")
+                     
         ),
         # Show a plot of the generated distribution
         mainPanel(
@@ -439,13 +445,13 @@ ui <- fluidPage(
                           fluidRow(tags$text("Unsere Projektmanagerin Frie Preu erreicht Ihr unter frie.p@correlaid.org.")),
                           fluidRow(tags$h5("Datenverarbeitende Systeme")),
                           fluidRow(textOutput("empfehlung_systemisch")),
-                          fluidRow(tags$text("Auch hier kann unsere Projektmanagerin Frie Preu (frie.p@correlaid.org) Euch weiterhelfen. Unsere vergangenen Projekte - für alle, die noch Inspiration suchen - findet Ihr unsere"), tags$a(href="https://correlaid.org/de/projects/", "Projektbeispiele"), tags$text("auch auf unserer Webseite.")),
+                          fluidRow(tags$text("Auch hier kann unsere Projektmanagerin Frie Preu (frie.p@correlaid.org) Euch weiterhelfen. Unsere vergangenen Projekte - für alle, die noch Inspiration suchen - findet Ihr unsere"), tags$a(href="https://correlaid.org/nonprofits/projects/", "Projektbeispiele"), tags$text("auch auf unserer Webseite.")),
                           fluidRow(tags$h5("Rechtliche Infrastruktur")),
                           fluidRow(textOutput("empfehlung_rechtlich")),
-                          fluidRow(tags$text("Zur Buchung einer Datensprechstunde geht es"), tags$a(href="https://calendly.com/correlaid/30min?month=2021-08", "hier.")),
+                          fluidRow(tags$text("Zur Buchung einer Datensprechstunde geht es"), tags$a(href="https://calendly.com/correlaid/30min", "hier.")),
                           fluidRow(tags$h5("Organisatorischer Reifegrad")),
                           fluidRow(textOutput("empfehlung_organisatorisch")),
-                          fluidRow(tags$text("Unsere Koordinatorin für datenwissenschaftliche Bildung Nina Hauser erreicht Ihr unter nina.h@correlaid.org. Geplante Events findet Ihr auf unserer"), tags$a(href="https://correlaid.org/de/events/", "Webseite.")),
+                          fluidRow(tags$text("Unsere Koordinatorin für datenwissenschaftliche Bildung Nina Hauser erreicht Ihr unter nina.h@correlaid.org. Geplante Events findet Ihr auf unserer"), tags$a(href="https://correlaid.org/events/", "Webseite.")),
                           fluidRow(tags$h5("Gesellschaftliche Einbettung")),
                           fluidRow(textOutput("empfehlung_gesellschaftlich")),
                           fluidRow(hr()),
@@ -638,6 +644,63 @@ server <- function(input, output, session){
         return(liste)
     })
     
+    # Download-Report
+    output$downloadbutton <- downloadHandler(
+        filename = paste0(format(Sys.Date(), '%d.%m.%Y'), '_EuerDatenreifegradmodell', '.pdf'),
+        
+        content = function(file) {
+            src1 <- normalizePath('report.Rmd')
+            src2 <- normalizePath('logo.png')
+            
+            # Wechselt in ein temporäres Directory und definiert Zugangsberechtigungen
+            owd <- setwd(tempdir())
+            on.exit(setwd(owd))
+            file.copy(src1, 'report.Rmd', overwrite = TRUE)
+            file.copy(src2, 'logo.png', overwrite = TRUE)
+            
+            # Render Report mit Parameters
+            out <- rmarkdown::render('report.Rmd', quiet = TRUE, params = list(name = input$name, ergebnisse_systemisch = ergebnisse()$systemisch, ergebnisse_inhaltlich = ergebnisse()$inhaltlich, ergebnisse_organisatorisch = ergebnisse()$organisatorisch, 
+                                                                               ergebnisse_gesellschaftlich = ergebnisse()$gesellschaftlich, ergebnisse_rechtlich = ergebnisse()$rechtlich, 
+                                                                               durchschnitt_inhaltlich = round(final_values['inhaltlich'],2), durchschnitt_systemisch = round(final_values['systemisch'],2), durchschnitt_rechtlich = round(final_values['rechtlich'],2),
+                                                                               durchschnitt_organisatorisch = round(final_values['organisatorisch'],2), durchschnitt_gesellschaftlich = round(final_values['gesellschaftlich'],2)))
+            file.rename(out, file)
+        })
+    
+    # Download-Report
+    output$downloadbutton <- downloadHandler(
+        
+        # Dateiname
+        filename = paste0(format(Sys.Date(), '%d.%m.%Y'), '_EuerDatenreifegradmodell', '.pdf'),
+        
+        # Inhalt
+        content = function(file) {
+            
+            # Dialogfenster
+            showModal(modalDialog("Datei wird geladen...", footer = NULL))
+            on.exit(removeModal())
+
+            # Benötigte Dateien
+            src1 <- normalizePath('report.Rmd')
+            src2 <- normalizePath('logo.png')
+            
+            # Wechselt in ein temporäres Directory und definiert Zugangsberechtigungen
+            owd <- setwd(tempdir())
+            on.exit(setwd(owd))
+            file.copy(src1, 'report.Rmd', overwrite = TRUE)
+            file.copy(src2, 'logo.png', overwrite = TRUE)
+            
+            # Render Report mit Parameters
+            out <- rmarkdown::render('report.Rmd', quiet = TRUE, params = list(name = input$name, ergebnisse_systemisch = ergebnisse()$systemisch, ergebnisse_inhaltlich = ergebnisse()$inhaltlich, ergebnisse_organisatorisch = ergebnisse()$organisatorisch, 
+                                                                               ergebnisse_gesellschaftlich = ergebnisse()$gesellschaftlich, ergebnisse_rechtlich = ergebnisse()$rechtlich, 
+                                                                               durchschnitt_inhaltlich = round(final_values['inhaltlich'],2), durchschnitt_systemisch = round(final_values['systemisch'],2), durchschnitt_rechtlich = round(final_values['rechtlich'],2),
+                                                                               durchschnitt_organisatorisch = round(final_values['organisatorisch'],2), durchschnitt_gesellschaftlich = round(final_values['gesellschaftlich'],2)))
+            # Datei ausgeben
+            file.copy(out, file)
+            
+            # Dialog
+            showModal(modalDialog("Eure Ergebnisse wurden erfolgreich heruntergeladen!", footer = modalButton("Schließen")))
+        })
+    
     # Tabellarische Ergebnisse
     dataframe <- reactive({
         df <- matrix(c(round(final_values['inhaltlich'],2), round(final_values['systemisch'],2), round(final_values['rechtlich'],2),
@@ -715,7 +778,7 @@ server <- function(input, output, session){
         if (ergebnisse()$inhaltlich < 2) {
             print("Mit Euren Daten könnt Ihr auf Grund fehlender Indikatoren, Granularität oder Qualität durch zu geringe Erhebungsfrequenz oder Fehleingaben keine gültigen Aussagen treffen? In einem datenstrategischen Projekt analysieren wir Euren Datenbestand hinsichtlich dieser Kriterien und geben Euch Empfehlungen, wie Ihr in Zukunft besser Daten generieren könnt. Dazu gehört auch die Ausarbeitung von Erhebungstools wie Umfragen und automatisierten Datenschnittstellen (APIs) zu internen und externen Datensätzen.")
         }
-        else print("Inhaltlich könnt Ihr mit Euren Daten bereits gut arbeiten. Ihr vermutet, es gibt an einigen Stellen trotzdem noch Verbesserungspotenzial? Lasst Euch von unserer Projektmanager:innen beraten.")
+        else print("Inhaltlich könnt Ihr mit Euren Daten bereits gut arbeiten. Ihr vermutet, es gibt an einigen Stellen trotzdem noch Verbesserungspotenzial? Lasst Euch von unseren Projektmanager:innen beraten.")
     })
     
     # systemisch -> projekt
