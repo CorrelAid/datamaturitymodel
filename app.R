@@ -21,17 +21,21 @@ base_df <- as.data.frame(read_sheet(ss = '10YlWyJzaDFer6rqKFTAYkXLuhcC9JgynSRmSU
 ## convert to numeric
 base_df[3:length(base_df)] <- lapply(base_df[3:length(base_df)], function(x) as.numeric(x) )
 
-## calculate dimensions
+## calculate dimensions: use median for ordinal variables (scala 1 to 4)
 advanced_df <- base_df %>%
-    mutate("inhaltlich" = rowMeans(base_df[3:6], na.rm =TRUE)) %>%
-    mutate("systemisch" = rowMeans(base_df[7:10], na.rm = TRUE)) %>%
-    mutate("rechtlich" = rowMeans(base_df[11:14], na.rm = TRUE)) %>%
-    mutate("organisatorisch" = rowMeans(base_df[15:18], na.rm = TRUE)) %>%
-    mutate("gesellschaftlich" = rowMeans(base_df[19:22], na.rm = TRUE))
-advanced_df[23:length(advanced_df)] <- lapply(advanced_df[23:length(advanced_df)], function(x) round(x,2) )
+    cbind("inhaltlich" = apply(base_df, 1, function(x) median(c(x$Relevanz, x$Granularität, x$Erhebungsfrequenz, x$Qualität), na.rm = TRUE))) %>%
+    cbind("systemisch" = apply(base_df, 1, function(x) median(c(x$Speicherung, x$Analyse, x$Zugang, x$Integration), na.rm = TRUE))) %>%
+    cbind("rechtlich" = apply(base_df, 1, function(x) median(c(x$DSGVO, x$Doku, x$Nutzungsrechte, x$Historie), na.rm = TRUE))) %>%
+    cbind("organisatorisch" = apply(base_df, 1, function(x) median(c(x$Organisation, x$Management, x$`Programmatisches Personal`, x$`Analytisches/technisches Personal`), na.rm = TRUE))) %>%
+    cbind("gesellschaftlich" = apply(base_df, 1, function(x) median(c(x$Fördernde, x$Partnerschaften, x$`Externe Dienstleister`, x$Bildung), na.rm = TRUE)))
 
-## get means for viz
-final_values <- colMeans(advanced_df[3:length(advanced_df)])
+## get medians from original data for viz (do not take the median of median for misrepresentational reasons)
+final_values <- c("inhaltlich" = median(unlist(cbind(base_df$Relevanz, base_df$Granularität, base_df$Erhebungsfrequenz, base_df$Qualität)), na.rm = TRUE),
+                  "systemisch" = median(unlist(cbind(base_df$Speicherung, base_df$Analyse, base_df$Zugang, base_df$Integration)), na.rm = T),
+                  "rechtlich" = median(unlist(cbind(base_df$DSGVO, base_df$Doku, base_df$Nutzungsrechte, base_df$Historie)), na.rm = T),
+                  "organisatorisch" = median(unlist(cbind(base_df$Organisation, base_df$Management, base_df$`Programmatisches Personal`, base_df$`Analytisches/technisches Personal`)), na.rm = TRUE),
+                  "gesellschaftlich" =  median(unlist(cbind(base_df$Fördernde, base_df$Partnerschaften, base_df$`Externe Dienstleister`, base_df$Bildung)), na.rm = TRUE)
+                  )
 
 
 
@@ -626,11 +630,11 @@ server <- function(input, output, session){
         a20 <- q20_education$get(input$education)
         
         # calculate values
-        inhaltlich <- mean(c(a1, a2, a3, a4))
-        systemisch <- mean(c(a5, a6, a7, a8))
-        rechtlich <- mean(c(a9, a10, a11, a12))
-        organisatorisch <- mean(c(a13, a14, a15, a16))
-        gesellschaftlich <- mean(c(a17, a18, a19, a20))
+        inhaltlich <- median(c(a1, a2, a3, a4))
+        systemisch <- median(c(a5, a6, a7, a8))
+        rechtlich <- median(c(a9, a10, a11, a12))
+        organisatorisch <- median(c(a13, a14, a15, a16))
+        gesellschaftlich <- median(c(a17, a18, a19, a20))
         
         # liste kreiieren
         liste <- list(relevant = a1, granularity = a2, collection = a3, quality = a4, inhaltlich = inhaltlich, 
@@ -661,8 +665,8 @@ server <- function(input, output, session){
             # Render Report mit Parameters
             out <- rmarkdown::render('report.Rmd', quiet = TRUE, params = list(name = input$name, ergebnisse_systemisch = ergebnisse()$systemisch, ergebnisse_inhaltlich = ergebnisse()$inhaltlich, ergebnisse_organisatorisch = ergebnisse()$organisatorisch, 
                                                                                ergebnisse_gesellschaftlich = ergebnisse()$gesellschaftlich, ergebnisse_rechtlich = ergebnisse()$rechtlich, 
-                                                                               durchschnitt_inhaltlich = round(final_values['inhaltlich'],2), durchschnitt_systemisch = round(final_values['systemisch'],2), durchschnitt_rechtlich = round(final_values['rechtlich'],2),
-                                                                               durchschnitt_organisatorisch = round(final_values['organisatorisch'],2), durchschnitt_gesellschaftlich = round(final_values['gesellschaftlich'],2)))
+                                                                               durchschnitt_inhaltlich = final_values['inhaltlich'], durchschnitt_systemisch = final_values['systemisch'], durchschnitt_rechtlich = final_values['rechtlich'],
+                                                                               durchschnitt_organisatorisch = final_values['organisatorisch'], durchschnitt_gesellschaftlich = final_values['gesellschaftlich']))
             file.rename(out, file)
         })
     
@@ -692,8 +696,8 @@ server <- function(input, output, session){
             # Render Report mit Parameters
             out <- rmarkdown::render('report.Rmd', quiet = TRUE, params = list(name = input$name, ergebnisse_systemisch = ergebnisse()$systemisch, ergebnisse_inhaltlich = ergebnisse()$inhaltlich, ergebnisse_organisatorisch = ergebnisse()$organisatorisch, 
                                                                                ergebnisse_gesellschaftlich = ergebnisse()$gesellschaftlich, ergebnisse_rechtlich = ergebnisse()$rechtlich, 
-                                                                               durchschnitt_inhaltlich = round(final_values['inhaltlich'],2), durchschnitt_systemisch = round(final_values['systemisch'],2), durchschnitt_rechtlich = round(final_values['rechtlich'],2),
-                                                                               durchschnitt_organisatorisch = round(final_values['organisatorisch'],2), durchschnitt_gesellschaftlich = round(final_values['gesellschaftlich'],2)))
+                                                                               durchschnitt_inhaltlich = final_values['inhaltlich'], durchschnitt_systemisch = final_values['systemisch'], durchschnitt_rechtlich = final_values['rechtlich'],
+                                                                               durchschnitt_organisatorisch = final_values['organisatorisch'], durchschnitt_gesellschaftlich = final_values['gesellschaftlich']))
             # Datei ausgeben
             file.copy(out, file)
             
@@ -703,8 +707,8 @@ server <- function(input, output, session){
     
     # Tabellarische Ergebnisse
     dataframe <- reactive({
-        df <- matrix(c(round(final_values['inhaltlich'],2), round(final_values['systemisch'],2), round(final_values['rechtlich'],2),
-                       round(final_values['organisatorisch'],2), round(final_values['gesellschaftlich'],2),
+        df <- matrix(c(final_values['inhaltlich'], final_values['systemisch'], final_values['rechtlich'],
+                       final_values['organisatorisch'], final_values['gesellschaftlich'],
                        ergebnisse()$inhaltlich, ergebnisse()$systemisch, ergebnisse()$rechtlich, ergebnisse()$organisatorisch, ergebnisse()$gesellschaftlich), 
                      nrow=5, byrow=FALSE) # in DataFrame konvertieren (notwendige für den Grid)
         colnames(df) <- c('Durchschnitt', 'Dein Ergebnis') # Spaltennamen anpassen
